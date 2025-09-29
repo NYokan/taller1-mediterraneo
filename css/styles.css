@@ -1,178 +1,203 @@
 :root {
-  --navy: #0a1f44;
-  --secondary: #f5f1e6;
-  --success: #2f9e44;
-  --error: #c92a2a;
-  --light: #ffffff;
-  --dark: #3a3a3a;
-  --shadow: 0 2px 12px rgba(0,0,0,0.2);
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: 'Inter', sans-serif;
+  --navy: #1a2942;
+  --gold: #d4af37;
+  --beige: #fdfaf5;
+  --font: 'Inter', sans-serif;
 }
 
 body {
-  background: var(--light);
-  color: var(--dark);
-  line-height: 1.5;
-  padding-top: 56px;
+  margin: 0;
+  font-family: var(--font);
+  background: var(--beige);
+  color: var(--navy);
 }
 
-/* Navbar navy */
+/* Navbar */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: var(--navy);
-  color: white;
-  padding: 12px 20px;
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  box-shadow: var(--shadow);
-  z-index: 1000;
+  color: #fff;
+  padding: 1rem 2rem;
 }
 
 .navbar .brand {
   font-weight: 600;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 }
 
-.nav__links {
-  display: flex;
-  gap: 16px;
-}
-
-.nav__links a {
-  color: white;
+.navbar .nav__links a {
+  margin-left: 1.5rem;
   text-decoration: none;
+  color: #fff;
   font-weight: 500;
+  transition: color .3s;
 }
 
-.nav__links a.is-active {
-  border-bottom: 2px solid #f9d923;
+.navbar .nav__links a:hover {
+  color: var(--gold);
 }
 
-.burger {
-  display: none;
-  font-size: 1.5rem;
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
-
-/* Secciones */
-.section {
-  display: none;
-  padding: 2rem;
-}
-
-.section.is-active {
-  display: block;
-}
-
-/* Modal fancy */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 2000;
-  left: 0; top: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.6);
-  justify-content: center;
-  align-items: center;
-}
-
-.modal.show {
-  display: flex;
-}
-
-.modal-content.fancy {
-  background: url("../img/Fancy-degradado.jpg") center/cover no-repeat;
-  padding: 2rem;
-  border-radius: 16px;
-  width: 90%;
-  max-width: 420px;
-  box-shadow: var(--shadow);
-  color: white;
+/* Hero */
+.hero {
   text-align: center;
-
-  /* efecto glass */
-  background-color: rgba(255,255,255,0.2);
-  backdrop-filter: blur(12px);
+  padding: 4rem 1rem;
 }
 
-/* Formularios */
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.form input {
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  outline: none;
-  margin-top: 6px;
-  background: rgba(255,255,255,0.85);
-  font-size: 0.95rem;
-}
-
-.form input:focus {
-  outline: 2px solid #f9d923;
-}
-
-/* Botones */
-.btn {
-  padding: 10px;
-  margin-top: 12px;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(90deg, #0a1f44, #1a3a7a);
-  color: white;
+.hero h1 {
+  font-size: 2.2rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s;
 }
 
-.btn:hover {
-  transform: translateY(-2px);
+.hero p {
+  font-size: 1.1rem;
+  margin-top: .5rem;
+  opacity: .9;
 }
 
-.btn.ghost {
-  background: transparent;
-  border: 1px solid white;
-  color: white;
+/* Menú */
+.menu {
+  padding: 2rem;
+  text-align: center;
 }
 
-/* Grid de menú */
-.grid {
+.menu-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-  margin-top: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
 }
 
 .card {
-  background: var(--light);
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: var(--shadow);
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.1);
   text-align: center;
-  transition: transform 0.2s;
+  transition: transform .2s;
 }
 
 .card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-5px);
 }
 
-.thumb {
+.card img {
+  max-width: 100px;
+  margin-bottom: 1rem;
+}
+
+.card h3 {
+  font-weight: 600;
+  margin-bottom: .5rem;
+}
+
+.card p {
+  font-weight: 500;
+  color: var(--navy);
+  margin-bottom: 1rem;
+}
+
+.btn {
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  padding: .7rem 1.2rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background .3s;
+}
+
+.btn:hover {
+  background: var(--gold);
+  color: var(--navy);
+}
+
+/* Modales */
+.modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  position: relative;
+}
+
+.modal.active {
+  display: flex;
+}
+
+/* Fancy form */
+.fancy-form {
+  background: url("../img/Fancy-degradado.jpg") center/cover no-repeat;
+  color: #fff;
+  padding: 2.5rem;
+  border-radius: 20px;
+  width: min(90%, 400px);
+  box-shadow: 0 8px 25px rgba(0,0,0,.3);
+  backdrop-filter: blur(10px);
+  text-align: left;
+}
+
+.fancy-form h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: .5rem;
+}
+
+.fancy-form .subtitle {
+  font-size: .95rem;
+  margin-bottom: 1.5rem;
+  opacity: .9;
+}
+
+.fancy-form .close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #fff;
+  cursor: pointer;
+}
+
+.fancy-form .form label {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.fancy-form .form input {
+  padding: .8rem;
+  border: none;
+  border-radius: 12px;
+  margin-top: .4rem;
+  font-size: .95rem;
+  background: rgba(255,255,255,0.9);
+  color: #333;
+}
+
+.fancy-form .form input:focus {
+  outline: 2px solid var(--gold);
+}
+
+.fancy-form .btn {
+  margin-top: 1rem;
   width: 100%;
-  height: 80px; /* más pequeña */
-  object-fit: contain;
-  border-radius: 6px;
+  border-radius: 12px;
+  font-size: 1rem;
+  background: linear-gradient(90deg, var(--navy), #2a3f6d);
+}
+
+.fancy-form .hint {
+  margin-top: 1rem;
+  font-size: .9rem;
 }

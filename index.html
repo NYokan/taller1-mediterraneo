@@ -4,70 +4,97 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>La Terraza Mediterránea</title>
+  <!-- Fuente Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600&display=swap" rel="stylesheet">
+  <!-- Estilos -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
   <!-- Navbar -->
   <header class="navbar">
     <div class="brand">🍷 La Terraza Mediterránea</div>
-    <button class="burger" id="btnBurger" aria-label="Abrir menú" aria-expanded="false">☰</button>
+    <button class="burger" id="btnBurger" aria-label="Abrir menú">☰</button>
     <nav class="nav__links" id="mainNav">
       <a href="#home" class="is-active">Inicio</a>
       <a href="#menu">Menú</a>
-      <a href="#registro">Registro</a>
-      <a href="#login">Login</a>
+      <a href="#registro" onclick="openModal('modalRegistro')">Registro</a>
+      <a href="#login" onclick="openModal('modalLogin')">Login</a>
     </nav>
   </header>
 
-  <main>
-    <!-- Home -->
-    <section id="home" class="section is-active">
-      <h1>Bienvenido a La Terraza Mediterránea</h1>
-      <p>Disfruta de lo mejor de la cocina mediterránea con un estilo único y elegante.</p>
-    </section>
+  <!-- Hero -->
+  <section class="hero" id="home">
+    <h1>Bienvenido a La Terraza Mediterránea</h1>
+    <p>Disfruta de lo mejor de la cocina mediterránea con un estilo único y elegante.</p>
+  </section>
 
-    <!-- Menú -->
-    <section id="menu" class="section">
-      <h2>Menú Mediterráneo</h2>
-      <div class="grid" id="menuGrid"></div>
-      <p id="menuMsg" class="hint muted"></p>
-    </section>
-  </main>
+  <!-- Menú -->
+  <section id="menu" class="menu">
+    <h2>Menú Mediterráneo</h2>
+    <div class="menu-grid">
+      <div class="card">
+        <img src="img/hummus.png" alt="Hummus clásico">
+        <h3>🥙 Hummus clásico</h3>
+        <p>$3.500</p>
+        <button class="btn">Agregar (Sprint 3)</button>
+      </div>
+      <div class="card">
+        <img src="img/falafel.png" alt="Falafel (6 uds)">
+        <h3>🥙 Falafel (6 uds)</h3>
+        <p>$4.200</p>
+        <button class="btn">Agregar (Sprint 3)</button>
+      </div>
+      <div class="card">
+        <img src="img/shawarma.png" alt="Shawarma de pollo">
+        <h3>🌯 Shawarma de pollo</h3>
+        <p>$5.200</p>
+        <button class="btn">Agregar (Sprint 3)</button>
+      </div>
+    </div>
+  </section>
 
-  <!-- Registro (modal) -->
-  <div id="modalRegistro" class="modal">
-    <div class="modal-content fancy">
-      <h2>Registro de Usuario</h2>
-      <form class="form" id="formRegistro" novalidate>
+  <!-- Modal Registro -->
+  <div class="modal" id="modalRegistro">
+    <div class="modal-content fancy-form">
+      <button class="close" data-close="modalRegistro">×</button>
+      <h2>Crear cuenta</h2>
+      <p class="subtitle">Empieza a disfrutar lo mejor de la cocina mediterránea</p>
+      <form class="form">
+        <label>Nombre
+          <input type="text" placeholder="Tu nombre">
+        </label>
         <label>Email
-          <input id="rEmail" type="email" placeholder="ana@example.com" required />
+          <input type="email" placeholder="correo@ejemplo.com">
         </label>
         <label>Contraseña
-          <input id="rPass" type="password" placeholder="********" required minlength="6" />
+          <input type="password" placeholder="••••••••">
         </label>
-        <button type="submit" class="btn">Registrarme</button>
-        <p id="rMsg" class="hint" aria-live="polite"></p>
+        <button type="submit" class="btn">Crear cuenta</button>
+        <p class="hint">¿Ya tienes cuenta?
+          <a href="#" onclick="closeModal('modalRegistro');openModal('modalLogin')">Inicia sesión</a>
+        </p>
       </form>
-      <button class="btn ghost close" data-close="modalRegistro">Cerrar</button>
     </div>
   </div>
 
-  <!-- Login (modal) -->
-  <div id="modalLogin" class="modal">
-    <div class="modal-content fancy">
-      <h2>Inicio de Sesión</h2>
-      <form class="form" id="formLogin" novalidate>
+  <!-- Modal Login -->
+  <div class="modal" id="modalLogin">
+    <div class="modal-content fancy-form">
+      <button class="close" data-close="modalLogin">×</button>
+      <h2>Inicia sesión</h2>
+      <p class="subtitle">Accede a tu cuenta y pedidos</p>
+      <form class="form">
         <label>Email
-          <input id="lEmail" type="email" placeholder="usuario@correo.cl" required />
+          <input type="email" placeholder="correo@ejemplo.com">
         </label>
         <label>Contraseña
-          <input id="lPass" type="password" placeholder="********" required />
+          <input type="password" placeholder="••••••••">
         </label>
         <button type="submit" class="btn">Ingresar</button>
-        <p id="lMsg" class="hint" aria-live="polite"></p>
+        <p class="hint">¿No tienes cuenta?
+          <a href="#" onclick="closeModal('modalLogin');openModal('modalRegistro')">Regístrate</a>
+        </p>
       </form>
-      <button class="btn ghost close" data-close="modalLogin">Cerrar</button>
     </div>
   </div>
 
