@@ -8,30 +8,24 @@
 body {
   margin: 0;
   font-family: var(--font);
-  background: url("../img/Navbar.jpg") center/cover no-repeat;
-  background-attachment: fixed; /* efecto elegante al scrollear */
+  background: var(--beige);
   color: var(--navy);
 }
 
-/* Navbar con glassmorphism */
+/* Navbar simple */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: sticky;
-  top: 0;
-  backdrop-filter: blur(12px);
-  background: rgba(0, 0, 0, 0.55); /* semi-transparente */
-  padding: 1.5rem 2.5rem;
-  height: 90px;
+  background: var(--navy);
+  color: #fff;
+  padding: 1rem 2rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  z-index: 1000;
 }
 
 .navbar .brand {
   font-weight: 600;
   font-size: 1.3rem;
-  color: #fff;
 }
 
 .navbar .nav__links a {
@@ -50,8 +44,6 @@ body {
 .hero {
   text-align: center;
   padding: 4rem 1rem;
-  color: #fff;
-  text-shadow: 0 2px 6px rgba(0,0,0,.5);
 }
 
 .hero h1 {
@@ -69,15 +61,6 @@ body {
 .menu {
   padding: 2rem;
   text-align: center;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(6px);
-  border-radius: 15px;
-  margin: 2rem;
-  box-shadow: 0 6px 20px rgba(0,0,0,.15);
-}
-
-.menu h2 {
-  color: var(--navy);
 }
 
 .menu-grid {
@@ -88,7 +71,7 @@ body {
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.9);
+  background: #fff;
   padding: 1.5rem;
   border-radius: 15px;
   box-shadow: 0 4px 10px rgba(0,0,0,.1);
@@ -144,78 +127,30 @@ body {
 }
 
 .modal-content {
-  position: relative;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 15px;
+  width: min(90%, 400px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
 }
 
 .modal.active {
   display: flex;
 }
 
-/* Fancy form */
-.fancy-form {
-  background: url("../img/Navbar.jpg") center/cover no-repeat;
-  color: #fff;
-  padding: 2.5rem;
-  border-radius: 20px;
-  width: min(90%, 400px);
-  box-shadow: 0 8px 25px rgba(0,0,0,.3);
-  backdrop-filter: blur(10px);
-  text-align: left;
-}
-
-.fancy-form h2 {
-  font-size: 1.8rem;
-  font-weight: 600;
-  margin-bottom: .5rem;
-}
-
-.fancy-form .subtitle {
-  font-size: .95rem;
-  margin-bottom: 1.5rem;
-  opacity: .9;
-}
-
-.fancy-form .close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: transparent;
-  border: none;
-  font-size: 1.5rem;
-  color: #fff;
-  cursor: pointer;
-}
-
-.fancy-form .form label {
+/* Formularios */
+.form {
   display: flex;
   flex-direction: column;
-  margin-bottom: 1rem;
-  font-weight: 500;
+  gap: 1rem;
 }
 
-.fancy-form .form input {
+.form input {
   padding: .8rem;
-  border: none;
-  border-radius: 12px;
-  margin-top: .4rem;
-  font-size: .95rem;
-  background: rgba(255,255,255,0.9);
-  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 10px;
 }
 
-.fancy-form .form input:focus {
+.form input:focus {
   outline: 2px solid var(--gold);
-}
-
-.fancy-form .btn {
-  margin-top: 1rem;
-  width: 100%;
-  border-radius: 12px;
-  font-size: 1rem;
-  background: linear-gradient(90deg, var(--navy), #2a3f6d);
-}
-
-.fancy-form .hint {
-  margin-top: 1rem;
-  font-size: .9rem;
 }

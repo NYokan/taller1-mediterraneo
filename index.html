@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Navbar</title>
+  <title>La Terraza</title>
   <!-- Fuente Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600&display=swap" rel="stylesheet">
   <!-- Estilos -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <!-- Navbar -->
+  <!-- Navbar simple -->
   <header class="navbar">
-    <div class="brand">🍷 Navbar</div>
+    <div class="brand">🍷 La Terraza</div>
     <nav class="nav__links" id="mainNav">
       <a href="#home" class="is-active">Inicio</a>
       <a href="#menu">Menú</a>
@@ -23,7 +23,7 @@
 
   <!-- Hero -->
   <section class="hero" id="home">
-    <h1>Bienvenido a Navbar</h1>
+    <h1>Bienvenido a La Terraza</h1>
     <p>Disfruta de lo mejor de la cocina mediterránea con un estilo único y elegante.</p>
   </section>
 
@@ -54,10 +54,9 @@
 
   <!-- Modal Registro -->
   <div class="modal" id="modalRegistro">
-    <div class="modal-content fancy-form">
+    <div class="modal-content">
       <button class="close" data-close="modalRegistro">×</button>
       <h2>Crear cuenta</h2>
-      <p class="subtitle">Empieza a disfrutar lo mejor de la cocina mediterránea</p>
       <form class="form">
         <label>Nombre
           <input type="text" placeholder="Tu nombre">
@@ -69,19 +68,15 @@
           <input type="password" placeholder="••••••••">
         </label>
         <button type="submit" class="btn">Crear cuenta</button>
-        <p class="hint">¿Ya tienes cuenta?
-          <a href="#" onclick="closeModal('modalRegistro');openModal('modalLogin')">Inicia sesión</a>
-        </p>
       </form>
     </div>
   </div>
 
   <!-- Modal Login -->
   <div class="modal" id="modalLogin">
-    <div class="modal-content fancy-form">
+    <div class="modal-content">
       <button class="close" data-close="modalLogin">×</button>
       <h2>Inicia sesión</h2>
-      <p class="subtitle">Accede a tu cuenta y pedidos</p>
       <form class="form">
         <label>Email
           <input type="email" placeholder="correo@ejemplo.com">
@@ -90,9 +85,6 @@
           <input type="password" placeholder="••••••••">
         </label>
         <button type="submit" class="btn">Ingresar</button>
-        <p class="hint">¿No tienes cuenta?
-          <a href="#" onclick="closeModal('modalLogin');openModal('modalRegistro')">Regístrate</a>
-        </p>
       </form>
     </div>
   </div>
