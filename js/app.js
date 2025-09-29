@@ -83,7 +83,7 @@ formLogin?.addEventListener("submit",(e)=>{
   const ok = lEmail.value.trim().toLowerCase() === "admin@mediterraneo.cl" && lPass.value === "123456";
   if (ok) {
     lMsg.textContent = "Inicio de sesión correcto. Redirigiendo…";
-    lMsg.classList.add("success");
+    rMsg?.classList.add("success");
   } else {
     lMsg.textContent = "Credenciales inválidas.";
     lMsg.classList.add("error");
@@ -97,7 +97,7 @@ const menuMsg  = document.getElementById("menuMsg");
 const productosMock = [
   { id: "p1", name: "Hummus clásico", price: 3500, img: "img/hummus.png", icon: "🥙" },
   { id: "p2", name: "Falafel (6 uds)", price: 4200, img: "img/falafel.png", icon: "🧆" },
-  { id: "p3", name: "Shawarma de pollo", price: 5200, img: "img/mediterrraneo.png", icon: "🌯" },
+  { id: "p3", name: "Shawarma de pollo", price: 5200, img: "img/shawarma.png", icon: "🌯" },
 ];
 
 function renderMenu(list) {

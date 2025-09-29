@@ -1,12 +1,11 @@
 :root {
-  --primary: #f5f1e6; /* Beige */
-  --primary-dark: #e6dfce;
-  --secondary: #6d5c41; /* Marrón elegante */
+  --navy: #0a1f44;
+  --secondary: #f5f1e6;
   --success: #2f9e44;
   --error: #c92a2a;
   --light: #ffffff;
   --dark: #3a3a3a;
-  --shadow: 0 2px 10px rgba(0,0,0,0.1);
+  --shadow: 0 2px 12px rgba(0,0,0,0.2);
 }
 
 * {
@@ -23,13 +22,13 @@ body {
   padding-top: 56px;
 }
 
-/* Navbar */
+/* Navbar navy */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--primary);
-  color: var(--dark);
+  background: var(--navy);
+  color: white;
   padding: 12px 20px;
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -39,6 +38,7 @@ body {
 
 .navbar .brand {
   font-weight: 600;
+  font-size: 1.2rem;
 }
 
 .nav__links {
@@ -47,13 +47,13 @@ body {
 }
 
 .nav__links a {
-  color: var(--dark);
+  color: white;
   text-decoration: none;
   font-weight: 500;
 }
 
 .nav__links a.is-active {
-  border-bottom: 2px solid var(--secondary);
+  border-bottom: 2px solid #f9d923;
 }
 
 .burger {
@@ -61,7 +61,7 @@ body {
   font-size: 1.5rem;
   background: none;
   border: none;
-  color: var(--dark);
+  color: white;
   cursor: pointer;
 }
 
@@ -75,13 +75,13 @@ body {
   display: block;
 }
 
-/* Modal */
+/* Modal fancy */
 .modal {
   display: none;
   position: fixed;
   z-index: 2000;
   left: 0; top: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.6);
   justify-content: center;
   align-items: center;
 }
@@ -90,13 +90,19 @@ body {
   display: flex;
 }
 
-.modal-content {
-  background: var(--primary);
+.modal-content.fancy {
+  background: url("../img/Fancy-degradado.jpg") center/cover no-repeat;
   padding: 2rem;
-  border-radius: 10px;
-  box-shadow: var(--shadow);
+  border-radius: 16px;
   width: 90%;
-  max-width: 400px;
+  max-width: 420px;
+  box-shadow: var(--shadow);
+  color: white;
+  text-align: center;
+
+  /* efecto glass */
+  background-color: rgba(255,255,255,0.2);
+  backdrop-filter: blur(12px);
 }
 
 /* Formularios */
@@ -107,33 +113,43 @@ body {
 }
 
 .form input {
-  padding: 8px;
-  border: 1px solid var(--secondary);
-  border-radius: 6px;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  margin-top: 6px;
+  background: rgba(255,255,255,0.85);
+  font-size: 0.95rem;
 }
 
+.form input:focus {
+  outline: 2px solid #f9d923;
+}
+
+/* Botones */
 .btn {
   padding: 10px;
+  margin-top: 12px;
   border: none;
-  border-radius: 6px;
-  background: var(--secondary);
+  border-radius: 8px;
+  background: linear-gradient(90deg, #0a1f44, #1a3a7a);
   color: white;
   font-weight: 600;
   cursor: pointer;
-  transition: 0.2s;
+  transition: transform 0.2s;
 }
 
 .btn:hover {
-  background: #594a36;
+  transform: translateY(-2px);
 }
 
 .btn.ghost {
   background: transparent;
-  border: 1px solid var(--secondary);
-  color: var(--secondary);
+  border: 1px solid white;
+  color: white;
 }
 
-/* Menú */
+/* Grid de menú */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -157,6 +173,6 @@ body {
 .thumb {
   width: 100%;
   height: 80px; /* más pequeña */
-  object-fit: contain; /* mostrar el producto completo */
+  object-fit: contain;
   border-radius: 6px;
 }
