@@ -17,7 +17,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: url("../img/Fancy-degradado.jpg") center/cover no-repeat;
+  background: url("../img/Fancy- degradado.jpg") center/cover no-repeat;
   color: #fff;
   padding: 1.5rem 2.5rem;
   height: 90px; /* más ancha */
