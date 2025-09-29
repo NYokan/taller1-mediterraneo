@@ -17,18 +17,20 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--navy);
+  background: url("../img/Fancy-degradado.jpg") center/cover no-repeat;
   color: #fff;
-  padding: 1rem 2rem;
+  padding: 1.5rem 2.5rem;
+  height: 90px; /* más ancha */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .navbar .brand {
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
 }
 
 .navbar .nav__links a {
-  margin-left: 1.5rem;
+  margin-left: 1.8rem;
   text-decoration: none;
   color: #fff;
   font-weight: 500;

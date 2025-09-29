@@ -1,16 +1,5 @@
 // ==========================
-// NAVBAR RESPONSIVE
-// ==========================
-const btnBurger = document.getElementById("btnBurger");
-const mainNav = document.getElementById("mainNav");
-
-btnBurger.addEventListener("click", () => {
-  mainNav.classList.toggle("active");
-  btnBurger.classList.toggle("open");
-});
-
-// ==========================
-// FUNCIONES DE MODALES
+// MODALES
 // ==========================
 function openModal(id) {
   document.getElementById(id).classList.add("active");
