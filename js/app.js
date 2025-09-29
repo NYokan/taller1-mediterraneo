@@ -1,5 +1,5 @@
-// Router
-const sections = ["home", "menu", "registro", "login"];
+// Router básico
+const sections = ["home", "menu"];
 function route() {
   const target = location.hash.replace("#", "") || "home";
   sections.forEach(id => {
@@ -17,8 +17,28 @@ const burger = document.getElementById("btnBurger");
 const mainNav = document.getElementById("mainNav");
 burger?.addEventListener("click", () => {
   mainNav.classList.toggle("is-open");
-  const opened = mainNav.classList.contains("is-open");
-  burger.setAttribute("aria-expanded", opened ? "true" : "false");
+});
+
+// Modal control
+function openModal(id) {
+  document.getElementById(id).classList.add("show");
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove("show");
+}
+
+document.querySelector('a[href="#registro"]')?.addEventListener("click", e => {
+  e.preventDefault();
+  openModal("modalRegistro");
+});
+document.querySelector('a[href="#login"]')?.addEventListener("click", e => {
+  e.preventDefault();
+  openModal("modalLogin");
+});
+document.querySelectorAll(".close").forEach(btn => {
+  btn.addEventListener("click", () => {
+    closeModal(btn.dataset.close);
+  });
 });
 
 // US01 Registro
@@ -29,7 +49,6 @@ formRegistro?.addEventListener("submit", (e) => {
   const rPass  = document.getElementById("rPass");
   const rMsg   = document.getElementById("rMsg");
   rMsg.textContent = "";
-  rMsg.className = "hint";
 
   if (!rEmail.checkValidity() || !rPass.checkValidity()) {
     rMsg.textContent = "Revisa los campos: email válido y contraseña (min. 6).";
@@ -54,7 +73,6 @@ formLogin?.addEventListener("submit",(e)=>{
   const lPass  = document.getElementById("lPass");
   const lMsg   = document.getElementById("lMsg");
   lMsg.textContent = "";
-  lMsg.className = "hint";
 
   if (!lEmail.checkValidity() || !lPass.checkValidity()) {
     lMsg.textContent = "Ingresa un email válido y contraseña.";
@@ -79,7 +97,7 @@ const menuMsg  = document.getElementById("menuMsg");
 const productosMock = [
   { id: "p1", name: "Hummus clásico", price: 3500, img: "img/hummus.png", icon: "🥙" },
   { id: "p2", name: "Falafel (6 uds)", price: 4200, img: "img/falafel.png", icon: "🧆" },
-  { id: "p3", name: "Shawarma de pollo", price: 5200, img: "img/mediterraneo.png", icon: "🌯" },
+  { id: "p3", name: "Shawarma de pollo", price: 5200, img: "img/mediterrraneo.png", icon: "🌯" },
 ];
 
 function renderMenu(list) {

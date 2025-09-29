@@ -1,29 +1,26 @@
 :root {
-  --primary: #1864ab;
-  --primary-dark: #0b4a80;
-  --secondary: #74c0fc;
+  --primary: #f5f1e6; /* Beige */
+  --primary-dark: #e6dfce;
+  --secondary: #6d5c41; /* Marrón elegante */
   --success: #2f9e44;
   --error: #c92a2a;
-  --light: #f8f9fa;
-  --dark: #212529;
-  --card: #ffffff;
-  --border: #dee2e6;
-  --shadow: 0 2px 8px rgba(0,0,0,0.1);
+  --light: #ffffff;
+  --dark: #3a3a3a;
+  --shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-/* Reset */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: system-ui, sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 body {
   background: var(--light);
   color: var(--dark);
   line-height: 1.5;
-  padding-top: 56px; /* navbar fija */
+  padding-top: 56px;
 }
 
 /* Navbar */
@@ -32,19 +29,16 @@ body {
   justify-content: space-between;
   align-items: center;
   background: var(--primary);
-  color: white;
+  color: var(--dark);
   padding: 12px 20px;
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 0; left: 0; right: 0;
   box-shadow: var(--shadow);
   z-index: 1000;
 }
 
 .navbar .brand {
-  font-size: 1.2rem;
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .nav__links {
@@ -53,14 +47,9 @@ body {
 }
 
 .nav__links a {
-  color: white;
+  color: var(--dark);
   text-decoration: none;
   font-weight: 500;
-  transition: 0.2s;
-}
-
-.nav__links a:hover {
-  color: var(--secondary);
 }
 
 .nav__links a.is-active {
@@ -72,7 +61,7 @@ body {
   font-size: 1.5rem;
   background: none;
   border: none;
-  color: white;
+  color: var(--dark);
   cursor: pointer;
 }
 
@@ -86,73 +75,65 @@ body {
   display: block;
 }
 
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0; top: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--primary);
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  width: 90%;
+  max-width: 400px;
+}
+
 /* Formularios */
 .form {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-width: 320px;
-}
-
-.form label {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.9rem;
 }
 
 .form input {
   padding: 8px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--secondary);
   border-radius: 6px;
-}
-
-.form input:invalid {
-  border-color: var(--error);
-}
-
-.form input:focus {
-  outline: 2px solid var(--secondary);
 }
 
 .btn {
   padding: 10px;
   border: none;
   border-radius: 6px;
-  background: var(--primary);
+  background: var(--secondary);
   color: white;
+  font-weight: 600;
   cursor: pointer;
-  font-weight: bold;
   transition: 0.2s;
 }
 
 .btn:hover {
-  background: var(--primary-dark);
+  background: #594a36;
 }
 
 .btn.ghost {
   background: transparent;
-  border: 1px solid var(--primary);
-  color: var(--primary);
+  border: 1px solid var(--secondary);
+  color: var(--secondary);
 }
 
-.hint {
-  font-size: 0.85rem;
-  margin-top: 4px;
-}
-
-.hint.success {
-  color: var(--success);
-}
-
-.hint.error {
-  color: var(--error);
-}
-
-.hint.muted {
-  color: #666;
-}
-
-/* Grid de menú */
+/* Menú */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -161,14 +142,11 @@ body {
 }
 
 .card {
-  background: var(--card);
+  background: var(--light);
   padding: 1rem;
   border-radius: 8px;
   box-shadow: var(--shadow);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
+  text-align: center;
   transition: transform 0.2s;
 }
 
@@ -178,28 +156,7 @@ body {
 
 .thumb {
   width: 100%;
-  height: 120px;
-  object-fit: cover;
+  height: 80px; /* más pequeña */
+  object-fit: contain; /* mostrar el producto completo */
   border-radius: 6px;
-}
-
-/* Responsivo */
-@media (max-width: 720px) {
-  .burger {
-    display: block;
-  }
-  .nav__links {
-    display: none;
-    flex-direction: column;
-    gap: 10px;
-    background: var(--primary);
-    position: absolute;
-    top: 56px;
-    right: 12px;
-    padding: 12px;
-    border-radius: 8px;
-  }
-  .nav__links.is-open {
-    display: flex;
-  }
 }
