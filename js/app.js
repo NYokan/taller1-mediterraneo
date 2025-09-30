@@ -1,78 +1,48 @@
-// --- Navbar: mostrar menú ---
-const menuLink = document.getElementById("menuLink");
-const menuSection = document.getElementById("menu");
+// ==================
+// Variables principales
+// ==================
+const hero = document.getElementById('hero');
+const menuSection = document.getElementById('menu');
+const menuLink = document.getElementById('menuLink');
 
-menuLink.addEventListener("click", (e) => {
+const loginModal = document.getElementById('loginModal');
+const usuarioLink = document.getElementById('usuarioLink');
+const closeBtn = document.querySelector('.close');
+
+// ==================
+// Mostrar/Ocultar Menú
+// ==================
+menuLink.addEventListener('click', (e) => {
   e.preventDefault();
-  menuSection.classList.toggle("hidden");
-  menuSection.scrollIntoView({ behavior: "smooth" });
+  hero.classList.add('hidden');   // Oculta el hero
+  menuSection.classList.remove('hidden'); // Muestra el menú
+  window.scrollTo({ top: menuSection.offsetTop, behavior: 'smooth' });
 });
 
-// --- Modales ---
-const registroModal = document.getElementById("registroModal");
-const loginModal = document.getElementById("loginModal");
-const closeBtns = document.querySelectorAll(".close");
+// ==================
+// Modal Login
+// ==================
+usuarioLink.addEventListener('click', (e) => {
+  e.preventDefault();
+  loginModal.style.display = 'flex';
+});
 
-// Cerrar modales con botón X
-closeBtns.forEach(btn => {
-  btn.addEventListener("click", () => {
-    registroModal.style.display = "none";
-    loginModal.style.display = "none";
+closeBtn.addEventListener('click', () => {
+  loginModal.style.display = 'none';
+});
+
+window.addEventListener('click', (e) => {
+  if (e.target === loginModal) {
+    loginModal.style.display = 'none';
+  }
+});
+
+// ==================
+// Demo: Botón Agregar (por ahora solo loguea)
+// ==================
+const addButtons = document.querySelectorAll('.card button');
+addButtons.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    alert('Producto agregado al carrito (demo Sprint 3)');
   });
-});
-
-// Cerrar modales clic afuera
-window.onclick = function(event) {
-  if (event.target === registroModal) registroModal.style.display = "none";
-  if (event.target === loginModal) loginModal.style.display = "none";
-};
-
-// --- Abrir Login desde navbar (USUARIO) ---
-const usuarioLink = document.getElementById("usuarioLink");
-usuarioLink?.addEventListener("click", (e) => {
-  e.preventDefault();
-  loginModal.style.display = "flex";
-});
-
-// --- Pasar de Login a Registro ---
-const goToRegistro = document.getElementById("goToRegistro");
-goToRegistro?.addEventListener("click", (e) => {
-  e.preventDefault();
-  loginModal.style.display = "none";
-  registroModal.style.display = "flex";
-});
-
-// --- Validaciones Mock ---
-// Registro
-const registroForm = registroModal.querySelector("form");
-registroForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const email = registroForm.querySelector('input[type="email"]').value;
-  const password = registroForm.querySelector('input[type="password"]').value;
-
-  if (email === "test@example.com") {
-    alert("El email ya está en uso");
-  } else if (password.length < 6) {
-    alert("La contraseña debe tener al menos 6 caracteres");
-  } else {
-    alert("Registro exitoso");
-    registroModal.style.display = "none";
-    registroForm.reset();
-  }
-});
-
-// Login
-const loginForm = loginModal.querySelector("form");
-loginForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const email = loginForm.querySelector('input[type="email"]').value;
-  const password = loginForm.querySelector('input[type="password"]').value;
-
-  if (email !== "test@example.com" || password !== "123456") {
-    alert("Credenciales inválidas");
-  } else {
-    alert("Inicio de sesión correcto");
-    loginModal.style.display = "none";
-    loginForm.reset();
-  }
 });

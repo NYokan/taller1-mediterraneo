@@ -4,8 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>La Terraza</title>
-  <link rel="stylesheet" href="css/styles.css?v=4">
+
+  <!-- Fuente Miltonian One -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Miltonian+One&display=swap" rel="stylesheet">
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/styles.css?v=5">
 </head>
 <body>
   <!-- Navbar -->
@@ -13,20 +17,20 @@
     <div class="logo">LA TERRAZA</div>
     <nav>
       <ul>
-        <li><a href="#">Reservas</a></li>
+        <li><a href="#" id="reservasLink">Reservas</a></li>
         <li><a href="#" id="menuLink">Menú</a></li>
-        <li><a href="#">Nosotros</a></li>
+        <li><a href="#" id="nosotrosLink">Nosotros</a></li>
         <li><a href="#" id="usuarioLink">Usuario</a></li>
       </ul>
     </nav>
   </header>
 
   <!-- Hero -->
-  <section class="hero">
+  <section id="hero" class="hero">
     <img src="img/Mediterraneo_Fondo.png" alt="Fondo Mediterráneo">
   </section>
 
-  <!-- Menú (oculto al inicio) -->
+  <!-- Sección Menú -->
   <section id="menu" class="menu hidden">
     <h2>Menú Mediterráneo</h2>
     <div class="menu-grid">
@@ -34,19 +38,19 @@
         <img src="img/hummus.png" alt="Hummus clásico">
         <h3>Hummus clásico</h3>
         <p>$3.500</p>
-        <button>Agregar (Sprint 3)</button>
+        <button>Agregar</button>
       </div>
       <div class="card">
-        <img src="img/falafel.png" alt="Falafel (6 uds)">
+        <img src="img/falafel.png" alt="Falafel">
         <h3>Falafel (6 uds)</h3>
         <p>$4.200</p>
-        <button>Agregar (Sprint 3)</button>
+        <button>Agregar</button>
       </div>
       <div class="card">
-        <img src="img/shawarma.png" alt="Shawarma de pollo">
+        <img src="img/shawarma.png" alt="Shawarma">
         <h3>Shawarma de pollo</h3>
         <p>$5.200</p>
-        <button>Agregar (Sprint 3)</button>
+        <button>Agregar</button>
       </div>
     </div>
   </section>
@@ -61,24 +65,10 @@
         <input type="password" placeholder="Contraseña" required>
         <button type="submit">Ingresar</button>
       </form>
-      <p>¿No tienes cuenta? <a href="#" id="goToRegistro">Regístrate aquí</a></p>
     </div>
   </div>
 
-  <!-- Modal Registro -->
-  <div id="registroModal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2>Registro</h2>
-      <form>
-        <input type="text" placeholder="Nombre completo" required>
-        <input type="email" placeholder="Correo" required>
-        <input type="password" placeholder="Contraseña" required>
-        <button type="submit">Registrarse</button>
-      </form>
-    </div>
-  </div>
-
+  <!-- Scripts -->
   <script src="js/app.js"></script>
 </body>
 </html>
