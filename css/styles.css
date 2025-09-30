@@ -31,7 +31,7 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
   position: sticky; top: 0; z-index: 50;
   display: flex; align-items: center; justify-content: space-between;
   padding: 1rem 2rem;
-  background: #fff;
+  background: #fff; /* fondo blanco */
   color: #4b2e2e; 
 }
 
@@ -43,7 +43,6 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
   position: relative;
   line-height: 1;
 }
-
 
 .logo:focus-visible{
   outline: 2px dashed var(--color-accent);
@@ -57,25 +56,27 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
 .nav__link{
   position: relative;
   text-decoration: none;
-  color: #4b2e2e;
+  color: #4b2e2e;              /* fijo en café */
   text-transform: uppercase;
   letter-spacing: .22em;
   font-weight: 600;
   padding-bottom: .4rem;
-  transition: color .25s ease;
+}
+
+.nav__link:hover{
+  color: #4b2e2e;              /* no cambia en hover */
 }
 
 .nav__link::after{
   content: "";
   position: absolute;
   left: 0; right: 0; bottom: -6px; height: 2px;
-  background: #fff;
+  background: #4b2e2e;        /* línea café */
   transform: scaleX(0);
   transform-origin: left center;
   transition: transform .25s ease;
 }
 
-.nav__link:hover{ color: var(--color-accent); }
 .nav__link:hover::after,
 .nav__link.is-active::after{ transform: scaleX(1); }
 
@@ -91,12 +92,13 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
 .hero{ padding: 2.5rem 0 0; }
 
 .hero__media{
-  width: min(1200px, 88vw);
-  aspect-ratio: 16/7;        /* más chata, elegante */
+  width: min(900px, 80vw);    /* más pequeña */
+  aspect-ratio: 16/6;         /* más chata */
   object-fit: cover;
   margin: 0 auto;
   border-radius: 6px;
   box-shadow: 0 12px 30px rgba(0,0,0,.08);
+  filter: brightness(0.85);   /* oscurecida */
 }
 
 .intro{
