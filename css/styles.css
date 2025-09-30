@@ -7,7 +7,7 @@
   --color-brown: #4b2e2e;
   --color-accent: #ffcc80;
 
-  --font-logo: 'Inter', serif; /* logo */
+  --font-logo: 'Montserrat', Arial, sans-serif; /* logo */
   --font-ui: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; /* resto */
 
   --nav-gap: 16px; /* espacio superior para bajar navbar */
@@ -31,8 +31,8 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
 ========================= */
 .navbar{
   position: sticky; 
-  top: var(--nav-gap);          /* sticky con separación */
-  margin-top: var(--nav-gap);   /* separación al cargar */
+  top: var(--nav-gap);
+  margin-top: var(--nav-gap);
   z-index: 50;
 
   display: flex; 
@@ -40,13 +40,14 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
   justify-content: space-between;
   padding: 1rem 2rem;
 
-  background: #fff;
+  background: var(--color-bg); /* Cambiado */
   color: var(--color-brown); 
   box-shadow: 0 1px 0 rgba(0,0,0,.06); /* sutil línea separadora */
 }
 
 .logo{
   font-family: var(--font-logo);
+  font-weight: 700; /* bold */
   font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.2rem);
   text-decoration: none;
   color: var(--color-brown);
@@ -209,3 +210,6 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
 
 .muted{ color: #6d645e; font-size: .92rem; margin-top: .6rem; }
 .muted a{ color: var(--color-brown); text-decoration: underline; }
+
+/* Google Fonts: Montserrat Bold */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
