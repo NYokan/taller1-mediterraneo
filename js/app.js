@@ -1,78 +1,74 @@
-// ==========================
-// MODALES
-// ==========================
-function openModal(id) {
-  document.getElementById(id).classList.add("active");
+// Referencias a los modales
+const registroModal = document.getElementById("registroModal");
+const loginModal = document.getElementById("loginModal");
+
+// Referencias a enlaces de navbar
+const registroLink = document.querySelector('a[href="#registro"]');
+const loginLink = document.querySelector('a[href="#login"]');
+
+// Botones de cierre
+const closeBtns = document.querySelectorAll(".close");
+
+// --- Abrir modales ---
+if (registroLink) {
+  registroLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    registroModal.style.display = "flex";
+  });
 }
 
-function closeModal(id) {
-  document.getElementById(id).classList.remove("active");
+if (loginLink) {
+  loginLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    loginModal.style.display = "flex";
+  });
 }
 
-// Botón "X" en cada modal
-document.querySelectorAll(".close").forEach(btn => {
+// --- Cerrar modales con botón ---
+closeBtns.forEach(btn => {
   btn.addEventListener("click", () => {
-    const modalId = btn.getAttribute("data-close");
-    closeModal(modalId);
+    registroModal.style.display = "none";
+    loginModal.style.display = "none";
   });
 });
 
-// Cerrar modal haciendo clic fuera
-document.querySelectorAll(".modal").forEach(modal => {
-  modal.addEventListener("click", e => {
-    if (e.target === modal) {
-      modal.classList.remove("active");
-    }
-  });
-});
+// --- Cerrar modales clic afuera ---
+window.onclick = function(event) {
+  if (event.target === registroModal) registroModal.style.display = "none";
+  if (event.target === loginModal) loginModal.style.display = "none";
+};
 
-// Cerrar modal con tecla ESC
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape") {
-    document.querySelectorAll(".modal.active").forEach(modal => {
-      modal.classList.remove("active");
-    });
+// --- Validaciones Mock ---
+// Registro
+const registroForm = registroModal.querySelector("form");
+registroForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const email = registroForm.querySelector('input[type="email"]').value;
+  const password = registroForm.querySelector('input[type="password"]').value;
+
+  if (email === "test@example.com") {
+    alert("El email ya está en uso");
+  } else if (password.length < 6) {
+    alert("La contraseña no cumple los requisitos");
+  } else {
+    alert("Registro exitoso");
+    registroModal.style.display = "none";
+    registroForm.reset();
   }
 });
 
-// ==========================
-// VALIDACIONES SIMPLES (mock)
-// ==========================
+// Login
+const loginForm = loginModal.querySelector("form");
+loginForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const email = loginForm.querySelector('input[type="email"]').value;
+  const password = loginForm.querySelector('input[type="password"]').value;
 
-// Validación registro
-const formRegistro = document.querySelector("#modalRegistro form");
-if (formRegistro) {
-  formRegistro.addEventListener("submit", e => {
-    e.preventDefault();
-    const email = formRegistro.querySelector("input[type='email']").value;
-    const pass = formRegistro.querySelector("input[type='password']").value;
-
-    if (!email.includes("@")) {
-      alert("El email no es válido.");
-      return;
-    }
-    if (pass.length < 6) {
-      alert("La contraseña debe tener al menos 6 caracteres.");
-      return;
-    }
-    alert("✅ Registro exitoso (mock).");
-    closeModal("modalRegistro");
-  });
-}
-
-// Validación login
-const formLogin = document.querySelector("#modalLogin form");
-if (formLogin) {
-  formLogin.addEventListener("submit", e => {
-    e.preventDefault();
-    const email = formLogin.querySelector("input[type='email']").value;
-    const pass = formLogin.querySelector("input[type='password']").value;
-
-    if (email === "" || pass === "") {
-      alert("Por favor completa todos los campos.");
-      return;
-    }
-    alert("✅ Login exitoso (mock).");
-    closeModal("modalLogin");
-  });
-}
+  if (email !== "test@example.com" || password !== "123456") {
+    alert("Credenciales inválidas");
+  } else {
+    alert("Inicio de sesión correcto");
+    loginModal.style.display = "none";
+    loginForm.reset();
+  }
+});

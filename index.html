@@ -4,87 +4,75 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>La Terraza</title>
-  <!-- Fuente Inter -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600&display=swap" rel="stylesheet">
-  <!-- Estilos -->
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <!-- Navbar simple -->
+  <!-- Navbar -->
   <header class="navbar">
-    <div class="brand">🍷 La Terraza</div>
-    <nav class="nav__links" id="mainNav">
-      <a href="#home" class="is-active">Inicio</a>
-      <a href="#menu">Menú</a>
-      <a href="#registro" onclick="openModal('modalRegistro')">Registro</a>
-      <a href="#login" onclick="openModal('modalLogin')">Login</a>
+    <div class="logo">LA TERRAZA</div>
+    <nav class="nav-links">
+      <a href="#reservas">RESERVAS</a>
+      <a href="#menu">MENÚ</a>
+      <a href="#nosotros">NOSOTROS</a>
+      <a href="#servicios">SERVICIOS</a>
     </nav>
   </header>
 
   <!-- Hero -->
-  <section class="hero" id="home">
+  <main class="hero">
     <h1>Bienvenido a La Terraza</h1>
     <p>Disfruta de lo mejor de la cocina mediterránea con un estilo único y elegante.</p>
-  </section>
+  </main>
 
-  <!-- Menú -->
-  <section id="menu" class="menu">
+  <!-- Sección Menú -->
+  <section id="menu" class="menu-section">
     <h2>Menú Mediterráneo</h2>
-    <div class="menu-grid">
-      <div class="card">
+    <div class="menu-container">
+      <div class="menu-item">
         <img src="img/hummus.png" alt="Hummus clásico">
-        <h3>🥙 Hummus clásico</h3>
+        <h3>Hummus clásico</h3>
         <p>$3.500</p>
-        <button class="btn">Agregar (Sprint 3)</button>
+        <button>Agregar (Sprint 3)</button>
       </div>
-      <div class="card">
+      <div class="menu-item">
         <img src="img/Falafel.png" alt="Falafel (6 uds)">
-        <h3>🥙 Falafel (6 uds)</h3>
+        <h3>Falafel (6 uds)</h3>
         <p>$4.200</p>
-        <button class="btn">Agregar (Sprint 3)</button>
+        <button>Agregar (Sprint 3)</button>
       </div>
-      <div class="card">
+      <div class="menu-item">
         <img src="img/shawarma.png" alt="Shawarma de pollo">
-        <h3>🌯 Shawarma de pollo</h3>
+        <h3>Shawarma de pollo</h3>
         <p>$5.200</p>
-        <button class="btn">Agregar (Sprint 3)</button>
+        <button>Agregar (Sprint 3)</button>
       </div>
     </div>
   </section>
 
-  <!-- Modal Registro -->
-  <div class="modal" id="modalRegistro">
+  <!-- Modales -->
+  <div id="registroModal" class="modal">
     <div class="modal-content">
-      <button class="close" data-close="modalRegistro">×</button>
-      <h2>Crear cuenta</h2>
-      <form class="form">
-        <label>Nombre
-          <input type="text" placeholder="Tu nombre">
-        </label>
-        <label>Email
-          <input type="email" placeholder="correo@ejemplo.com">
-        </label>
-        <label>Contraseña
-          <input type="password" placeholder="••••••••">
-        </label>
-        <button type="submit" class="btn">Crear cuenta</button>
+      <span class="close">&times;</span>
+      <h2>Registro</h2>
+      <form>
+        <input type="text" placeholder="Nombre" required>
+        <input type="email" placeholder="Correo" required>
+        <input type="password" placeholder="Contraseña" required>
+        <button type="submit">Registrarse</button>
       </form>
     </div>
   </div>
 
-  <!-- Modal Login -->
-  <div class="modal" id="modalLogin">
+  <div id="loginModal" class="modal">
     <div class="modal-content">
-      <button class="close" data-close="modalLogin">×</button>
-      <h2>Inicia sesión</h2>
-      <form class="form">
-        <label>Email
-          <input type="email" placeholder="correo@ejemplo.com">
-        </label>
-        <label>Contraseña
-          <input type="password" placeholder="••••••••">
-        </label>
-        <button type="submit" class="btn">Ingresar</button>
+      <span class="close">&times;</span>
+      <h2>Login</h2>
+      <form>
+        <input type="email" placeholder="Correo" required>
+        <input type="password" placeholder="Contraseña" required>
+        <button type="submit">Ingresar</button>
       </form>
     </div>
   </div>
