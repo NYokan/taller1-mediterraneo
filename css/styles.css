@@ -1,9 +1,9 @@
-/* General */
+/* Fuente principal */
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
-  background-color: #fdfdfb;
-  color: #2c2c2c;
+  background-color: #faf9f6;
+  color: #222;
 }
 
 /* Navbar */
@@ -11,125 +11,111 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.2rem 3rem;
-  background-color: #4b2e2e; /* Marrón oscuro */
-  color: white;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+  background-color: #4b2e2e; /* marrón oscuro */
+  padding: 1rem 2rem;
 }
 
-.logo {
-  font-family: 'Cinzel', serif; /* Simil Milton One */
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: 0.3rem;
+.navbar .logo {
+  font-family: 'Miltonian One', cursive;
+  font-size: 1.6rem;
   color: white;
+  letter-spacing: 0.2em;
 }
 
-.nav-links {
+.navbar nav ul {
+  list-style: none;
   display: flex;
   gap: 2rem;
+  margin: 0;
+  padding: 0;
 }
 
-.nav-links a {
-  font-family: 'Inter', sans-serif;
-  font-weight: 500;
-  letter-spacing: 0.2rem;
+.navbar nav ul li a {
   text-decoration: none;
   color: white;
-  position: relative;
-  transition: all 0.3s ease;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  transition: color 0.3s ease;
 }
 
-.nav-links a::after {
-  content: "";
-  position: absolute;
-  width: 0%;
-  height: 2px;
-  background-color: white;
-  left: 0;
-  bottom: -4px;
-  transition: width 0.3s ease;
-}
-
-.nav-links a:hover::after {
-  width: 100%;
+.navbar nav ul li a:hover {
+  color: #d4a373;
 }
 
 /* Hero */
 .hero {
+  width: 100%;
   text-align: center;
-  padding: 6rem 2rem;
 }
 
-.hero h1 {
-  font-family: 'Cinzel', serif;
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #2c2c2c;
-  margin-bottom: 1rem;
-}
-
-.hero p {
-  font-size: 1.2rem;
-  color: #444;
+.hero img {
+  width: 100%;
+  height: auto;
+  max-height: 500px;
+  object-fit: cover;
 }
 
 /* Menú */
-.menu-section {
-  padding: 4rem 2rem;
+.menu {
+  padding: 3rem 2rem;
   text-align: center;
 }
 
-.menu-container {
+.menu.hidden {
+  display: none;
+}
+
+.menu h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.menu-grid {
   display: flex;
   justify-content: center;
   gap: 2rem;
   flex-wrap: wrap;
-  margin-top: 2rem;
 }
 
-.menu-item {
-  background: #fff;
+.card {
+  background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
-  width: 260px;
-  transition: transform 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  padding: 1rem;
+  max-width: 250px;
+  transition: transform 0.3s;
 }
 
-.menu-item:hover {
+.card:hover {
   transform: translateY(-5px);
 }
 
-.menu-item img {
-  width: 100px;
-  height: auto;
+.card img {
+  max-width: 120px;
   margin-bottom: 1rem;
 }
 
-.menu-item h3 {
+.card h3 {
   margin: 0.5rem 0;
   font-weight: 600;
 }
 
-.menu-item p {
-  margin: 0.5rem 0;
-  color: #333;
+.card p {
+  margin: 0.3rem 0;
+  font-weight: 500;
 }
 
-.menu-item button {
+.card button {
+  padding: 0.5rem 1rem;
   background-color: #4b2e2e;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.3s ease;
 }
 
-.menu-item button:hover {
+.card button:hover {
   background-color: #6b3e3e;
 }
 
@@ -137,12 +123,10 @@ body {
 .modal {
   display: none;
   position: fixed;
-  z-index: 2000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.6);
   justify-content: center;
   align-items: center;
 }
@@ -150,34 +134,49 @@ body {
 .modal-content {
   background: #fff;
   padding: 2rem;
-  border-radius: 12px;
-  width: 350px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
   text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content h2 {
+  margin-bottom: 1rem;
 }
 
 .modal-content input {
   width: 100%;
+  padding: 0.6rem;
   margin: 0.5rem 0;
-  padding: 0.7rem;
   border: 1px solid #ccc;
   border-radius: 6px;
 }
 
 .modal-content button {
-  margin-top: 1rem;
-  width: 100%;
-  padding: 0.8rem;
+  padding: 0.7rem 1.5rem;
+  background-color: #4b2e2e;
+  color: white;
   border: none;
   border-radius: 6px;
-  background: #4b2e2e;
-  color: white;
+  margin-top: 1rem;
   cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.modal-content button:hover {
+  background-color: #6b3e3e;
 }
 
 .close {
   position: absolute;
-  right: 15px;
-  top: 10px;
+  top: 15px;
+  right: 25px;
   font-size: 1.5rem;
   cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }

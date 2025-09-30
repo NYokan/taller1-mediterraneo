@@ -4,45 +4,45 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>La Terraza</title>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Miltonian+One&display=swap" rel="stylesheet">
 </head>
 <body>
   <!-- Navbar -->
   <header class="navbar">
     <div class="logo">LA TERRAZA</div>
-    <nav class="nav-links">
-      <a href="#reservas">RESERVAS</a>
-      <a href="#menu">MENÚ</a>
-      <a href="#nosotros">NOSOTROS</a>
-      <a href="#servicios">SERVICIOS</a>
+    <nav>
+      <ul>
+        <li><a href="#">Reservas</a></li>
+        <li><a href="#" id="menuLink">Menú</a></li>
+        <li><a href="#">Nosotros</a></li>
+        <li><a href="#" id="usuarioLink">Usuario</a></li>
+      </ul>
     </nav>
   </header>
 
   <!-- Hero -->
-  <main class="hero">
-    <h1>Bienvenido a La Terraza</h1>
-    <p>Disfruta de lo mejor de la cocina mediterránea con un estilo único y elegante.</p>
-  </main>
+  <section class="hero">
+    <img src="img/Mediterraneo_Fondo.png" alt="Fondo Mediterráneo">
+  </section>
 
-  <!-- Sección Menú -->
-  <section id="menu" class="menu-section">
+  <!-- Menú (oculto al inicio) -->
+  <section id="menu" class="menu hidden">
     <h2>Menú Mediterráneo</h2>
-    <div class="menu-container">
-      <div class="menu-item">
+    <div class="menu-grid">
+      <div class="card">
         <img src="img/hummus.png" alt="Hummus clásico">
         <h3>Hummus clásico</h3>
         <p>$3.500</p>
         <button>Agregar (Sprint 3)</button>
       </div>
-      <div class="menu-item">
-        <img src="img/Falafel.png" alt="Falafel (6 uds)">
+      <div class="card">
+        <img src="img/falafel.png" alt="Falafel (6 uds)">
         <h3>Falafel (6 uds)</h3>
         <p>$4.200</p>
         <button>Agregar (Sprint 3)</button>
       </div>
-      <div class="menu-item">
+      <div class="card">
         <img src="img/shawarma.png" alt="Shawarma de pollo">
         <h3>Shawarma de pollo</h3>
         <p>$5.200</p>
@@ -51,20 +51,7 @@
     </div>
   </section>
 
-  <!-- Modales -->
-  <div id="registroModal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2>Registro</h2>
-      <form>
-        <input type="text" placeholder="Nombre" required>
-        <input type="email" placeholder="Correo" required>
-        <input type="password" placeholder="Contraseña" required>
-        <button type="submit">Registrarse</button>
-      </form>
-    </div>
-  </div>
-
+  <!-- Modal Login -->
   <div id="loginModal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
@@ -73,6 +60,21 @@
         <input type="email" placeholder="Correo" required>
         <input type="password" placeholder="Contraseña" required>
         <button type="submit">Ingresar</button>
+      </form>
+      <p>¿No tienes cuenta? <a href="#" id="goToRegistro">Regístrate aquí</a></p>
+    </div>
+  </div>
+
+  <!-- Modal Registro -->
+  <div id="registroModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Registro</h2>
+      <form>
+        <input type="text" placeholder="Nombre completo" required>
+        <input type="email" placeholder="Correo" required>
+        <input type="password" placeholder="Contraseña" required>
+        <button type="submit">Registrarse</button>
       </form>
     </div>
   </div>
