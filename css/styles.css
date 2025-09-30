@@ -7,7 +7,7 @@
   --color-brown: #4b2e2e;
   --color-accent: #ffcc80;
 
-  --font-logo: 'Montserrat', Arial, sans-serif; /* logo */
+  --font-logo: 'Playfair Display', serif; /* logo y navbar */
   --font-ui: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; /* resto */
 
   --nav-gap: 16px; /* espacio superior para bajar navbar */
@@ -211,5 +211,52 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
 .muted{ color: #6d645e; font-size: .92rem; margin-top: .6rem; }
 .muted a{ color: var(--color-brown); text-decoration: underline; }
 
-/* Google Fonts: Montserrat Bold */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+/* =========================
+   Sección Sobre Nosotros
+========================= */
+.about {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+  max-width: 1200px;
+  margin: 4rem auto;
+  padding: 0 1.5rem;
+}
+
+.about__text h2 {
+  font-family: var(--font-logo);
+  font-size: clamp(1.8rem, 1.2rem + 1.5vw, 2.4rem);
+  color: var(--color-brown);
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--color-brown);
+  display: inline-block;
+  padding-bottom: .3rem;
+}
+
+.about__text p {
+  font-size: 1.1rem;
+  color: #3a2f2b;
+  line-height: 1.7;
+}
+
+.about__img img {
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+}
+
+/* Versión responsive */
+@media (max-width: 768px) {
+  .about {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .about__img {
+    order: -1;
+  }
+}
+
+/* Google Fonts: Playfair Display */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
