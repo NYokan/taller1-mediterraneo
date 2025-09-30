@@ -1,74 +1,98 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>La Terraza</title>
 
-  <!-- Fuente Miltonian One -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Miltonian+One&display=swap" rel="stylesheet">
+  <!-- Fuentes: Logo con Luxurious Roman, UI con Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Luxurious+Roman&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Estilos -->
-  <link rel="stylesheet" href="css/styles.css?v=5">
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/styles.css?v=8">
 </head>
 <body>
   <!-- Navbar -->
   <header class="navbar">
-    <div class="logo">LA TERRAZA</div>
-    <nav>
-      <ul>
-        <li><a href="#" id="reservasLink">Reservas</a></li>
-        <li><a href="#" id="menuLink">Menú</a></li>
-        <li><a href="#" id="nosotrosLink">Nosotros</a></li>
-        <li><a href="#" id="usuarioLink">Usuario</a></li>
-      </ul>
+    <a href="#" id="homeLink" class="logo" aria-label="Ir al inicio">LA TERRAZA</a>
+    <nav class="nav">
+      <a href="#" class="nav__link" id="reservasLink">Reservas</a>
+      <a href="#" class="nav__link" id="menuLink">Menú</a>
+      <a href="#" class="nav__link" id="nosotrosLink">Nosotros</a>
+      <a href="#" class="nav__link" id="usuarioLink">Usuario</a>
     </nav>
   </header>
 
-  <!-- Hero -->
-  <section id="hero" class="hero">
-    <img src="img/Mediterraneo_Fondo.png" alt="Fondo Mediterráneo">
-  </section>
+  <!-- HOME (hero + bienvenida) -->
+  <main id="home" class="view view--home">
+    <section class="hero">
+      <img class="hero__media" src="img/Mediterraneo_Fondo.png" alt="Fondo Mediterráneo">
+    </section>
 
-  <!-- Sección Menú -->
-  <section id="menu" class="menu hidden">
+    <section class="intro">
+      <h1>Bienvenido a La Terraza</h1>
+      <p>Disfruta de lo mejor de la cocina mediterránea con un estilo único y elegante.</p>
+    </section>
+  </main>
+
+  <!-- MENÚ -->
+  <section id="menu" class="view view--menu is-hidden" aria-label="Menú Mediterráneo">
     <h2>Menú Mediterráneo</h2>
     <div class="menu-grid">
-      <div class="card">
+      <article class="card">
         <img src="img/hummus.png" alt="Hummus clásico">
         <h3>Hummus clásico</h3>
         <p>$3.500</p>
-        <button>Agregar</button>
-      </div>
-      <div class="card">
-        <img src="img/falafel.png" alt="Falafel">
+        <button type="button">Agregar</button>
+      </article>
+
+      <article class="card">
+        <img src="img/falafel.png" alt="Falafel (6 uds)">
         <h3>Falafel (6 uds)</h3>
         <p>$4.200</p>
-        <button>Agregar</button>
-      </div>
-      <div class="card">
-        <img src="img/shawarma.png" alt="Shawarma">
+        <button type="button">Agregar</button>
+      </article>
+
+      <article class="card">
+        <img src="img/shawarma.png" alt="Shawarma de pollo">
         <h3>Shawarma de pollo</h3>
         <p>$5.200</p>
-        <button>Agregar</button>
-      </div>
+        <button type="button">Agregar</button>
+      </article>
     </div>
   </section>
 
-  <!-- Modal Login -->
-  <div id="loginModal" class="modal">
+  <!-- MODAL LOGIN (Sprint 2) -->
+  <div id="loginModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
     <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2>Login</h2>
+      <button class="close" aria-label="Cerrar modal">&times;</button>
+      <h2 id="loginTitle">Login</h2>
       <form>
         <input type="email" placeholder="Correo" required>
         <input type="password" placeholder="Contraseña" required>
         <button type="submit">Ingresar</button>
       </form>
+      <p class="muted">¿No tienes cuenta?
+        <a href="#" id="goToRegistro">Regístrate aquí</a>
+      </p>
     </div>
   </div>
 
-  <!-- Scripts -->
-  <script src="js/app.js"></script>
+  <!-- MODAL REGISTRO (Sprint 2) -->
+  <div id="registroModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="registroTitle">
+    <div class="modal-content">
+      <button class="close" aria-label="Cerrar modal">&times;</button>
+      <h2 id="registroTitle">Registro</h2>
+      <form>
+        <input type="text" placeholder="Nombre completo" required>
+        <input type="email" placeholder="Correo" required>
+        <input type="password" placeholder="Contraseña (mín. 6)" minlength="6" required>
+        <button type="submit">Registrarse</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="js/app.js?v=8"></script>
 </body>
 </html>
