@@ -31,27 +31,19 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
   position: sticky; top: 0; z-index: 50;
   display: flex; align-items: center; justify-content: space-between;
   padding: 1rem 2rem;
-  background: var(--color-brown);
-  color: #fff;
+  background: #fff;
+  color: #4b2e2e; 
 }
 
 .logo{
   font-family: var(--font-logo);
   font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.2rem);
   text-decoration: none;
-  color: #fff;
+  color: #4b2e2e;
   position: relative;
   line-height: 1;
 }
 
-/* Subrayado corto bajo el logo (estilo La Mesa) */
-.logo::after{
-  content: "";
-  position: absolute;
-  left: 0; bottom: -6px;
-  width: 100px; height: 2px;
-  background: #fff;
-}
 
 .logo:focus-visible{
   outline: 2px dashed var(--color-accent);
@@ -65,7 +57,7 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
 .nav__link{
   position: relative;
   text-decoration: none;
-  color: #fff;
+  color: #4b2e2e;
   text-transform: uppercase;
   letter-spacing: .22em;
   font-weight: 600;
