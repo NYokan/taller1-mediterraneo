@@ -607,3 +607,47 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
   border-radius: 8px;
   font-size: 1rem;
 }
+
+/* =========================
+   Popup Confirmación Pedido
+========================= */
+.pedido-popup {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+  transition: opacity 0.3s ease;
+}
+
+.pedido-popup.is-hidden {
+  display: none;
+}
+
+.popup-content {
+  background: #fff;
+  padding: 2rem 3rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+  animation: scaleUp 0.4s ease;
+}
+
+.popup-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.popup-content h2 {
+  font-family: var(--font-ui);
+  font-size: 1.5rem;
+  color: var(--color-brown);
+  margin: 0;
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

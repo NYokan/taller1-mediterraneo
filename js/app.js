@@ -165,8 +165,28 @@ if (window.location.hash === '#menu') {
 // Botón confirmar pedido en carrito
 if (confirmarBtn) {
   confirmarBtn.addEventListener("click", () => {
-    pedidoView.classList.add("is-hidden");
-    pagoView.classList.remove("is-hidden");
+    if (carrito.length === 0) {
+      alert("Tu carrito está vacío");
+      return;
+    }
+
+    // Guardar boleta en localStorage
+    const boleta = {
+      fecha: new Date().toLocaleString(),
+      items: carrito,
+      total: calcularTotal()
+    };
+    localStorage.setItem("boleta", JSON.stringify(boleta));
+
+    // Mostrar popup
+    const popup = document.getElementById("pedidoPopup");
+    popup.classList.remove("is-hidden");
+
+    // Después de 1.5s ocultar popup y mostrar boleta
+    setTimeout(() => {
+      popup.classList.add("is-hidden");
+      showBoleta(); // redirige a la boleta
+    }, 1500);
   });
 }
 
@@ -227,45 +247,111 @@ if (confirmarPedidoBtn) {
   });
 }
 
+// --- Confirmar Pedido y redirigir a Boleta ---
+document.getElementById('confirmarPedido').addEventListener('click', () => {
+  if (cart.length === 0) {
+    alert("Tu carrito está vacío");
+    return;
+  }
+
+  // Guardar datos de la compra en localStorage
+  const boleta = {
+    fecha: new Date().toLocaleString(),
+    items: cart,
+    total: cart.reduce((acc, item) => acc + item.price * item.quantity, 0)
+  };
+  localStorage.setItem('boleta', JSON.stringify(boleta));
+
+  // Vaciar carrito para que no se duplique al volver
+  cart = [];
+  localStorage.removeItem('cart');
+
+  // Redirigir a la boleta
+  window.location.href = "boleta.html";
+});
+
 // Generar boleta
-function generarBoleta() {
+function generarBoleta(data) {
   const boletaItems = document.getElementById("boletaItems");
   const boletaTotal = document.getElementById("boletaTotal");
   const boletaFecha = document.getElementById("boletaFecha");
 
-  // Fecha actual
-  const fecha = new Date();
-  boletaFecha.textContent = `Fecha: ${fecha.toLocaleDateString()} ${fecha.toLocaleTimeString()}`;
+  // Si se pasa data, úsala; si no, usa pedidoItems
+  const items = data?.items || pedidoItems;
+  const fecha = data?.fecha || new Date().toLocaleString();
 
-  // Limpiar tabla
+  boletaFecha.textContent = `Fecha: ${fecha}`;
+
   boletaItems.innerHTML = "";
 
   let total = 0;
 
-  if (pedidoItems.length === 0) {
+  if (items.length === 0) {
     boletaItems.innerHTML = `<tr><td colspan="4">No hay productos en la boleta</td></tr>`;
     boletaTotal.textContent = "$0";
     return;
   }
 
-  // Llenar tabla con productos
-  pedidoItems.forEach(item => {
-    const subtotal = item.precio * item.cantidad;
+  items.forEach(item => {
+    const subtotal = item.precio ? item.precio * item.cantidad : item.price * item.quantity;
     total += subtotal;
 
     const fila = document.createElement("tr");
     fila.innerHTML = `
-      <td>${item.nombre}</td>
-      <td>${item.cantidad}</td>
-      <td>$${item.precio.toLocaleString()}</td>
+      <td>${item.nombre || item.product}</td>
+      <td>${item.cantidad || item.quantity}</td>
+      <td>$${(item.precio || item.price).toLocaleString()}</td>
       <td>$${subtotal.toLocaleString()}</td>
     `;
     boletaItems.appendChild(fila);
   });
 
-  // Mostrar total
   boletaTotal.textContent = `$${total.toLocaleString()}`;
 }
+
+// =============================
+// Renderizar Boleta Digital
+// =============================
+function renderBoleta() {
+  const boleta = JSON.parse(localStorage.getItem('boleta'));
+
+  if (!boleta) return;
+
+  // Fecha
+  document.getElementById("boletaFecha").textContent = boleta.fecha;
+
+  // Items
+  const tbody = document.getElementById("boletaItems");
+  tbody.innerHTML = ""; // limpiar antes de pintar
+  boleta.items.forEach(item => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${item.name}</td>
+      <td>${item.quantity}</td>
+      <td>$${item.price}</td>
+      <td>$${item.price * item.quantity}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Total
+  document.getElementById("boletaTotal").textContent = `$${boleta.total}`;
+
+  // Botón volver al inicio
+  const volverBtn = document.getElementById("volverInicio");
+  if (volverBtn) {
+    volverBtn.addEventListener("click", () => {
+      localStorage.removeItem("boleta"); // limpia boleta actual
+      showHome(); // función que ya usas para mostrar la vista inicio
+    });
+  }
+}
+
+// Llamar renderBoleta cuando se muestre la vista
+document.addEventListener("DOMContentLoaded", () => {
+  if (!document.getElementById("boleta")) return;
+  renderBoleta();
+});
 
 const volverInicio = document.getElementById("volverInicio");
 if (volverInicio) {
@@ -274,4 +360,19 @@ if (volverInicio) {
     document.getElementById("home").classList.remove("is-hidden");
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
+}
+
+// Nueva función para mostrar la boleta
+function showBoleta() {
+  // Ocultar todas las vistas
+  document.querySelectorAll(".view").forEach(v => v.classList.add("is-hidden"));
+
+  // Mostrar la vista boleta
+  document.getElementById("boleta").classList.remove("is-hidden");
+
+  // Renderizar contenido
+  renderBoleta();
+
+  // Actualizar navegación activa (si usas subrayado de navbar)
+  setActive("boleta");
 }
