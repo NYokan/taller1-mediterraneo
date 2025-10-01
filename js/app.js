@@ -85,6 +85,7 @@ goToRegistro?.addEventListener('click', (e) => {
 
 // Carrito en memoria (se puede guardar en localStorage después)
 let carrito = [];
+let pedidoItems = []; // lista de productos en el carrito
 
 // Seleccionar botones de agregar
 document.querySelectorAll('.card button').forEach((btn) => {
@@ -180,24 +181,22 @@ if (pagoForm) {
     const metodo = document.getElementById("metodo").value;
 
     if (!nombre || !direccion || !metodo) {
-      alert("Por favor completa todos los campos antes de continuar.");
+      alert("⚠️ Por favor completa todos los campos antes de continuar.");
       return;
     }
 
-    // Simular confirmación
-    alert(`✅ Gracias ${nombre}, tu pedido fue confirmado.\n\nSerá entregado en: ${direccion}`);
-
-    // Vaciar carrito
-    // Si tienes una función para vaciar el carrito, úsala aquí. 
-    // Si no, puedes limpiar el localStorage y actualizar la barra:
-    carrito = [];
-    guardarCarrito();
-    actualizarBarraPedido();
-
-    // Redirigir a la vista inicial
+    // Ocultar vista de pago
     document.getElementById("pago").classList.add("is-hidden");
-    document.getElementById("home").classList.remove("is-hidden");
+
+    // Mostrar boleta
+    generarBoleta();
+
+    document.getElementById("boleta").classList.remove("is-hidden");
     window.scrollTo({ top: 0, behavior: "smooth" });
+
+    // Vaciar carrito después de mostrar boleta
+    pedidoItems = [];
+    actualizarPedido();
   });
 }
 
@@ -224,6 +223,55 @@ if (confirmarPedidoBtn) {
     document.getElementById("pago").classList.remove("is-hidden");
 
     // Opcional: resetear scroll para que el usuario vea el formulario desde arriba
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+
+// Generar boleta
+function generarBoleta() {
+  const boletaItems = document.getElementById("boletaItems");
+  const boletaTotal = document.getElementById("boletaTotal");
+  const boletaFecha = document.getElementById("boletaFecha");
+
+  // Fecha actual
+  const fecha = new Date();
+  boletaFecha.textContent = `Fecha: ${fecha.toLocaleDateString()} ${fecha.toLocaleTimeString()}`;
+
+  // Limpiar tabla
+  boletaItems.innerHTML = "";
+
+  let total = 0;
+
+  if (pedidoItems.length === 0) {
+    boletaItems.innerHTML = `<tr><td colspan="4">No hay productos en la boleta</td></tr>`;
+    boletaTotal.textContent = "$0";
+    return;
+  }
+
+  // Llenar tabla con productos
+  pedidoItems.forEach(item => {
+    const subtotal = item.precio * item.cantidad;
+    total += subtotal;
+
+    const fila = document.createElement("tr");
+    fila.innerHTML = `
+      <td>${item.nombre}</td>
+      <td>${item.cantidad}</td>
+      <td>$${item.precio.toLocaleString()}</td>
+      <td>$${subtotal.toLocaleString()}</td>
+    `;
+    boletaItems.appendChild(fila);
+  });
+
+  // Mostrar total
+  boletaTotal.textContent = `$${total.toLocaleString()}`;
+}
+
+const volverInicio = document.getElementById("volverInicio");
+if (volverInicio) {
+  volverInicio.addEventListener("click", () => {
+    document.getElementById("boleta").classList.add("is-hidden");
+    document.getElementById("home").classList.remove("is-hidden");
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 }

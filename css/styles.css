@@ -524,3 +524,86 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
   font-weight: 700;
   color: var(--color-accent);
 }
+
+/* =========================
+   Boleta Digital (Sprint 3)
+========================= */
+.view--boleta {
+  padding: 3rem 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.boleta-container {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.1);
+}
+
+.boleta-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.boleta-header h3 {
+  font-family: var(--font-logo);
+  font-size: 1.5rem;
+  color: var(--color-brown);
+  margin: 0;
+}
+
+.boleta-header p {
+  font-size: .95rem;
+  color: #555;
+  margin-top: .3rem;
+}
+
+.boleta-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+}
+
+.boleta-tabla th,
+.boleta-tabla td {
+  border-bottom: 1px solid #ddd;
+  padding: .75rem;
+  text-align: center;
+}
+
+.boleta-tabla th {
+  background: #f9f7f5;
+  color: var(--color-brown);
+  font-weight: 700;
+}
+
+.boleta-tabla td {
+  color: #333;
+  font-weight: 500;
+}
+
+.boleta-total-label {
+  text-align: right;
+  font-weight: 700;
+  color: var(--color-brown);
+  padding-right: 1rem;
+}
+
+.boleta-footer {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.boleta-footer p {
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 1rem;
+}
+
+.boleta-footer .btn-confirmar {
+  background: var(--color-brown);
+  padding: .9rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+}

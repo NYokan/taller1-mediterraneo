@@ -135,6 +135,40 @@
     </form>
   </section>
 
+  <!-- BOLETA DIGITAL -->
+  <section id="boleta" class="view view--boleta is-hidden" aria-label="Boleta Digital">
+    <h2>Boleta Digital</h2>
+    <div class="boleta-container">
+      <div class="boleta-header">
+        <h3>La Terraza - Restaurante Mediterráneo</h3>
+        <p id="boletaFecha"></p>
+      </div>
+      <table class="boleta-tabla">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cant.</th>
+            <th>Precio</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody id="boletaItems">
+          <!-- Se llena dinámicamente con JS -->
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" class="boleta-total-label">TOTAL</td>
+            <td id="boletaTotal"></td>
+          </tr>
+        </tfoot>
+      </table>
+      <div class="boleta-footer">
+        <p>Gracias por tu compra 🙌</p>
+        <button id="volverInicio" class="btn-confirmar">Volver al inicio</button>
+      </div>
+    </div>
+  </section>
+
   <!-- MODAL LOGIN (Sprint 2) -->
   <div id="loginModal" class="modal" style="display:none;">
     <div class="modal-content">
