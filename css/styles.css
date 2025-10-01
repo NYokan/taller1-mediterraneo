@@ -430,6 +430,93 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
   .pi-actions{ justify-content: space-between; }
 }
 
+/* =========================
+   Confirmación y Pago
+========================= */
+.view--pago {
+  padding: 3rem 1.5rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.pago-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.1);
+}
+
+.pago-form h2 {
+  font-family: var(--font-logo);
+  font-size: 1.8rem;
+  color: var(--color-brown);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: var(--color-brown);
+}
+
+.form-group input,
+.form-group select {
+  padding: .8rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: var(--font-ui);
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--color-brown);
+  box-shadow: 0 0 0 3px rgba(75, 46, 46, 0.2);
+}
+
+.btn-confirmar {
+  background: var(--color-brown);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .2s ease;
+}
+
+.btn-confirmar:hover {
+  background: #6d4c41;
+}
+
+.btn-cancelar {
+  background: #ccc;
+  color: #2b2b2b;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .2s ease;
+}
+
+.btn-cancelar:hover {
+  background: #b0b0b0;
+}
+
 /* Google Fonts: Playfair Display */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
 

@@ -17,6 +17,11 @@ const registroModal = document.getElementById('registroModal');
 const closeBtns     = document.querySelectorAll('.close');
 const goToRegistro  = document.getElementById('goToRegistro');
 
+// Botón confirmar pedido en carrito
+const confirmarBtn = document.querySelector(".btn-confirmar-pedido");
+const pagoView = document.getElementById("pago");
+const pedidoView = document.getElementById("pedido");
+
 /* =========================
    Navegación de vistas
 ========================= */
@@ -151,7 +156,74 @@ document.getElementById('verPedidoBtn').addEventListener('click', () => {
 // Init
 cargarCarrito();
 
-/* =========================
-   Modales de Usuario
-========================= */
-// (Duplicated code removed. All modal logic is handled above.)
+// Mostrar menú si la URL tiene #menu
+if (window.location.hash === '#menu') {
+  showMenu();
+}
+
+// Botón confirmar pedido en carrito
+if (confirmarBtn) {
+  confirmarBtn.addEventListener("click", () => {
+    pedidoView.classList.add("is-hidden");
+    pagoView.classList.remove("is-hidden");
+  });
+}
+
+// Formulario de pago
+const pagoForm = document.getElementById("pagoForm");
+if (pagoForm) {
+  pagoForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const nombre = document.getElementById("nombre").value.trim();
+    const direccion = document.getElementById("direccion").value.trim();
+    const metodo = document.getElementById("metodo").value;
+
+    if (!nombre || !direccion || !metodo) {
+      alert("Por favor completa todos los campos antes de continuar.");
+      return;
+    }
+
+    // Simular confirmación
+    alert(`✅ Gracias ${nombre}, tu pedido fue confirmado.\n\nSerá entregado en: ${direccion}`);
+
+    // Vaciar carrito
+    // Si tienes una función para vaciar el carrito, úsala aquí. 
+    // Si no, puedes limpiar el localStorage y actualizar la barra:
+    carrito = [];
+    guardarCarrito();
+    actualizarBarraPedido();
+
+    // Redirigir a la vista inicial
+    document.getElementById("pago").classList.add("is-hidden");
+    document.getElementById("home").classList.remove("is-hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+
+// Botón cancelar pago
+const cancelarPago = document.getElementById("cancelarPago");
+if (cancelarPago) {
+  cancelarPago.addEventListener("click", () => {
+    document.getElementById("pago").classList.add("is-hidden");
+    document.getElementById("pedido").classList.remove("is-hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+// Simular envío de pago
+// (Código duplicado eliminado. El evento submit ya está manejado arriba.)
+    document.getElementById("home").classList.remove("is-hidden");
+  });
+}
+
+// Botón Confirmar pedido
+const confirmarPedidoBtn = document.getElementById("confirmarPedidoBtn");
+if (confirmarPedidoBtn) {
+  confirmarPedidoBtn.addEventListener("click", () => {
+    // Ocultar la vista de pedido
+    document.getElementById("pedido").classList.add("is-hidden");
+    // Mostrar la vista de pago
+    document.getElementById("pago").classList.remove("is-hidden");
+
+    // Opcional: resetear scroll para que el usuario vea el formulario desde arriba
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
