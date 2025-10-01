@@ -6,11 +6,10 @@ const menuView   = document.getElementById('menu');
 
 const homeLink     = document.getElementById('homeLink');
 const menuLink     = document.getElementById('menuLink');
-const reservasLink = document.getElementById('reservasLink');
 const nosotrosLink = document.getElementById('nosotrosLink');
 const usuarioLink  = document.getElementById('usuarioLink');
 
-const navLinks = [reservasLink, menuLink, nosotrosLink, usuarioLink];
+const navLinks = [menuLink, nosotrosLink, usuarioLink];
 
 /* Modales (Sprint 2) */
 const loginModal    = document.getElementById('loginModal');
@@ -22,7 +21,9 @@ const goToRegistro  = document.getElementById('goToRegistro');
    Navegación de vistas
 ========================= */
 function setActive(link) {
-  navLinks.forEach(a => a.classList.remove('is-active'));
+  navLinks.forEach(a => {
+    if (a) a.classList.remove('is-active');
+  });
   if (link) link.classList.add('is-active');
 }
 
@@ -41,11 +42,15 @@ function showMenu() {
 }
 
 /* Eventos navbar */
-homeLink.addEventListener('click', (e) => { e.preventDefault(); showHome(); });
-menuLink.addEventListener('click', (e) => { e.preventDefault(); showMenu(); });
-
-reservasLink.addEventListener('click', (e) => { e.preventDefault(); showHome(); });
-nosotrosLink.addEventListener('click', (e) => { e.preventDefault(); showHome(); });
+if (homeLink) {
+  homeLink.addEventListener('click', (e) => { e.preventDefault(); showHome(); });
+}
+if (menuLink) {
+  menuLink.addEventListener('click', (e) => { e.preventDefault(); showMenu(); });
+}
+if (nosotrosLink) {
+  nosotrosLink.addEventListener('click', (e) => { e.preventDefault(); showHome(); });
+}
 
 /* =========================
    Modal Login / Registro
