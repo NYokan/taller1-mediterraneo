@@ -30,17 +30,18 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
    Navbar
 ========================= */
 .navbar{
-  position: sticky; 
-  top: var(--nav-gap);
-  margin-top: var(--nav-gap);
-  z-index: 50;
+  position: fixed; /* Fija en la parte superior */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
 
   display: flex; 
   align-items: center; 
   justify-content: space-between;
   padding: 1rem 2rem;
 
-  background: var(--color-bg); /* Cambiado */
+  background: var(--color-bg);
   color: var(--color-brown); 
   box-shadow: 0 1px 0 rgba(0,0,0,.06); /* sutil línea separadora */
 }
@@ -94,27 +95,20 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
 .is-hidden{ display: none !important; }
 
 /* =========================
-   Hero (como el ejemplo)
+   Hero
 ========================= */
-.hero{ padding: 2.5rem 0 0; }
+.hero {
+  padding: 0; /* sin espacio extra arriba */
+}
 
-.hero__media{
+.hero__media {
   width: min(1000px, 85vw);
   max-height: 420px;
-  aspect-ratio: 16/7;          
   object-fit: cover;
   margin: 0 auto;
   border-radius: 6px;
   box-shadow: 0 12px 30px rgba(0,0,0,.08);
-  filter: brightness(0.8); /* más oscura */
-}
-
-.intro{
-  max-width: 900px;
-  margin: 1.5rem auto 3rem;
-  text-align: center;
-  padding: 0 1rem;
-  color: #463b37;
+  filter: brightness(0.8);
 }
 
 /* =========================
@@ -216,12 +210,12 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
 ========================= */
 .about {
   display: grid;
-  grid-template-columns: 1.4fr 0.6fr; /* texto más ancho, imagen más angosta */
-  gap: 2rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
   align-items: center;
-  max-width: 1000px;   /* un poco más estrecho para parecerse al ejemplo */
-  margin: 4rem auto;
-  padding: 0 1.5rem;
+  width: min(1000px, 85vw);  /* mismo ancho que hero */
+  margin: 3rem auto;
+  padding: 0 1rem;
 }
 
 .about__text {
