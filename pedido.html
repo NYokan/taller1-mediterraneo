@@ -12,10 +12,10 @@
   <header class="navbar">
     <a href="index.html" class="logo" aria-label="Ir al inicio">LA TERRAZA</a>
     <nav class="nav">
-      <a href="index.html" class="nav__link">Inicio</a>
       <a href="index.html#menu" class="nav__link">Menú</a>
       <a href="index.html#nosotros" class="nav__link">Nosotros</a>
-      <a href="#" class="nav__link is-active">Pedido</a>
+      <a href="pedido.html" class="nav__link is-active">Pedido (<span id="contadorCarrito">0</span>)</a>
+      <a href="#" class="nav__link" id="usuarioLink">Usuario</a>
     </nav>
   </header>
 
@@ -27,7 +27,7 @@
 
     <!-- Vacío -->
     <p id="pedidoVacio" class="muted" style="display:none;">
-      Tu carrito está vacío. <a href="index.html" class="nav__link">Ir al menú</a>
+      Tu carrito está vacío. <a href="index.html#menu" class="nav__link">Ir al menú</a>
     </p>
 
     <!-- Resumen -->

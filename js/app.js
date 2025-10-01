@@ -50,15 +50,15 @@ nosotrosLink.addEventListener('click', (e) => { e.preventDefault(); showHome(); 
 /* =========================
    Modal Login / Registro
 ========================= */
-usuarioLink.addEventListener('click', (e) => {
+usuarioLink?.addEventListener('click', (e) => {
   e.preventDefault();
-  loginModal.style.display = 'flex';
+  if (loginModal) loginModal.style.display = 'flex';
 });
 
 closeBtns.forEach(btn => {
   btn.addEventListener('click', () => {
-    loginModal.style.display = 'none';
-    registroModal.style.display = 'none';
+    if (loginModal) loginModal.style.display = 'none';
+    if (registroModal) registroModal.style.display = 'none';
   });
 });
 
@@ -69,26 +69,27 @@ window.addEventListener('click', (e) => {
 
 goToRegistro?.addEventListener('click', (e) => {
   e.preventDefault();
-  loginModal.style.display = 'none';
-  registroModal.style.display = 'flex';
+  if (loginModal) loginModal.style.display = 'none';
+  if (registroModal) registroModal.style.display = 'flex';
 });
 
 // Carrito en memoria (se puede guardar en localStorage después)
 let carrito = [];
 
 // Seleccionar botones de agregar
-document.querySelectorAll('.card button').forEach((btn, index) => {
+document.querySelectorAll('.card button').forEach((btn) => {
   btn.addEventListener('click', () => {
     const card = btn.closest('.card');
     const nombre = card.querySelector('h3').textContent;
     const precio = parseInt(card.querySelector('p').textContent.replace('$','').replace('.',''));
-    
+    const imagen = card.querySelector('img').getAttribute('src'); // << IMPORTANTE
+
     // Buscar si ya está en carrito
     const item = carrito.find(p => p.nombre === nombre);
     if(item){
       item.cantidad++;
     } else {
-      carrito.push({ nombre, precio, cantidad: 1 });
+      carrito.push({ nombre, precio, cantidad: 1, imagen });
     }
 
     actualizarBarraPedido();
@@ -144,3 +145,8 @@ document.getElementById('verPedidoBtn').addEventListener('click', () => {
 
 // Init
 cargarCarrito();
+
+/* =========================
+   Modales de Usuario
+========================= */
+// (Duplicated code removed. All modal logic is handled above.)

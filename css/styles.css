@@ -374,6 +374,20 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
 
 .pi-info small{ color: #6b4a3f; }
 
+.pi-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pi-info img.pi-thumb {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+}
+
 .pi-actions{
   display: flex;
   align-items: center;

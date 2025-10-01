@@ -41,8 +41,11 @@ function render() {
   lista.innerHTML = carrito.map(it => `
     <li class="pedido-item" data-nombre="${it.nombre}">
       <div class="pi-info">
-        <h4>${it.nombre}</h4>
-        <small>$${CLP(it.precio)} c/u</small>
+        <img src="${it.imagen}" alt="${it.nombre}" class="pi-thumb">
+        <div>
+          <h4>${it.nombre}</h4>
+          <small>$${CLP(it.precio)} c/u</small>
+        </div>
       </div>
       <div class="pi-actions">
         <button class="menos" aria-label="Disminuir">−</button>
