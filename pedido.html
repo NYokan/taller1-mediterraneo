@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tu Pedido | La Terraza</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=10">
+</head>
+<body>
+  <!-- Navbar (misma estructura que index) -->
+  <header class="navbar">
+    <a href="index.html" class="logo" aria-label="Ir al inicio">LA TERRAZA</a>
+    <nav class="nav">
+      <a href="index.html" class="nav__link">Inicio</a>
+      <a href="index.html#menu" class="nav__link">Menú</a>
+      <a href="index.html#nosotros" class="nav__link">Nosotros</a>
+      <a href="#" class="nav__link is-active">Pedido</a>
+    </nav>
+  </header>
+
+  <main class="view view--pedido">
+    <h2>Tu Pedido</h2>
+
+    <!-- Lista del carrito -->
+    <ul id="pedidoList" class="pedido-list"></ul>
+
+    <!-- Vacío -->
+    <p id="pedidoVacio" class="muted" style="display:none;">
+      Tu carrito está vacío. <a href="index.html" class="nav__link">Ir al menú</a>
+    </p>
+
+    <!-- Resumen -->
+    <div id="pedidoResumen" class="pedido-resumen" style="display:none;">
+      <div>
+        <strong>Productos:</strong> <span id="resumenItems">0</span> ·
+        <strong>Total:</strong> $<span id="resumenTotal">0</span>
+      </div>
+      <div class="acciones">
+        <button id="btnVaciar">Vaciar carrito</button>
+        <button id="btnConfirmar">Confirmar pedido</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/pedido.js?v=1"></script>
+</body>
+</html>

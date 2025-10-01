@@ -122,33 +122,42 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
   font-weight: 700;
 }
 
-.menu-grid{
+.menu-grid {
   margin: 2rem auto 0;
   width: min(1200px, 92vw);
   display: grid;
   gap: 1.6rem;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(3, 1fr); /* Fuerza 3 columnas para simetría */
 }
 
-.card{
+@media (min-width: 900px) {
+  .menu-grid {
+    grid-template-columns: repeat(4, 1fr); /* 4 columnas en pantallas grandes */
+  }
+}
+
+.card {
   background: #fff;
   border-radius: 12px;
   padding: 1.25rem;
   text-align: center;
   box-shadow: 0 10px 24px rgba(0,0,0,.06);
   transition: transform .18s ease, box-shadow .18s ease;
-}
-
-.card:hover{
-  transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(0,0,0,.10);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 370px; /* Alto fijo para todas las cards */
+  height: 100%;
 }
 
 .card img {
   width: 200px;
+  max-height: 140px;
   margin: .5rem auto 1rem;
   border-radius: 12px;
   box-shadow: 0 6px 18px rgba(0,0,0,.08);
+  object-fit: contain;
 }
 .card h3 {
   font-family: var(--font-logo);
@@ -168,6 +177,7 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
   background: var(--color-brown); color: #fff;
   font-weight: 600; cursor: pointer;
   transition: background .2s ease;
+  margin-top: auto; /* Empuja el botón al fondo de la card */
 }
 .card button:hover{ background: #6d4c41; }
 
@@ -283,5 +293,133 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
   }
 }
 
+/* =========================
+   Barra de pedido inferior
+========================= */
+.barra-pedido {
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  background: var(--color-brown);
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  z-index: 60;
+  box-shadow: 0 -4px 10px rgba(0,0,0,.15);
+}
+
+.barra-pedido p {
+  margin: 0;
+  font-weight: 500;
+}
+
+.barra-pedido button {
+  background: var(--color-accent);
+  color: var(--color-brown);
+  border: none;
+  padding: .6rem 1.2rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .2s ease;
+}
+
+.barra-pedido button:hover {
+  background: #ffd699;
+}
+
+/* =========================
+   Vista Pedido (carrito)
+========================= */
+.view--pedido{
+  width: min(1000px, 90vw);
+  margin: 7rem auto 4rem; /* espacio por navbar fija */
+  padding: 0 0 2rem;
+}
+
+.view--pedido h2{
+  font-family: var(--font-logo);
+  color: var(--color-brown);
+  font-size: clamp(1.8rem, 1.4rem + 1.2vw, 2.2rem);
+  margin-bottom: 1rem;
+}
+
+.pedido-list{
+  list-style: none;
+  margin: 1rem 0 2rem;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.pedido-item{
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+}
+
+.pi-info h4{
+  margin: 0 0 .25rem;
+  color: var(--color-brown);
+  font-weight: 700;
+}
+
+.pi-info small{ color: #6b4a3f; }
+
+.pi-actions{
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+.pi-actions .menos, .pi-actions .mas{
+  width: 36px; height: 36px;
+  border: 0; border-radius: 8px;
+  background: #f0eae6; color: #3b2a2a;
+  font-size: 1.1rem; cursor: pointer;
+}
+
+.pi-actions .eliminar{
+  border: 0; background: transparent;
+  color: #a11; cursor: pointer; font-weight: 600;
+}
+
+.pi-actions .pi-total{
+  min-width: 96px; text-align: right; font-weight: 700; color:#6b4a3f;
+}
+
+.pedido-resumen{
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--color-brown); color: #fff;
+  padding: 1rem 1.2rem; border-radius: 12px;
+}
+
+.pedido-resumen .acciones button{
+  border: 0; border-radius: 8px; padding: .6rem 1rem; font-weight: 600; cursor: pointer;
+  margin-left: .5rem;
+}
+#btnVaciar{ background: #f8e1e1; color:#7a1d1d; }
+#btnConfirmar{ background: var(--color-accent); color: var(--color-brown); }
+
+@media (max-width: 640px){
+  .pedido-item{
+    flex-direction: column; align-items: stretch;
+  }
+  .pi-actions{ justify-content: space-between; }
+}
+
 /* Google Fonts: Playfair Display */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+
+#contadorCarrito {
+  font-weight: 700;
+  color: var(--color-accent);
+}

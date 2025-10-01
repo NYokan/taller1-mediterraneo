@@ -18,7 +18,9 @@
     <nav class="nav">
       <a href="#" class="nav__link" id="menuLink">Menú</a>
       <a href="#" class="nav__link" id="nosotrosLink">Nosotros</a>
-      <a href="#" class="nav__link" id="reservasLink">Pedido</a>
+      <a href="pedido.html" class="nav__link">
+        Pedido (<span id="contadorCarrito">0</span>)
+      </a>
       <a href="#" class="nav__link" id="usuarioLink">Usuario</a>
     </nav>
   </header>
@@ -94,6 +96,11 @@
         <button type="button">Agregar</button>
       </article>
 
+    </div>
+    <!-- Barra de pedido (aparece solo si hay productos) -->
+    <div id="barraPedido" class="barra-pedido is-hidden">
+      <p><strong>Tu pedido:</strong> <span id="totalItems">0</span> productos · Total: $<span id="totalPrecio">0</span></p>
+      <button id="verPedidoBtn">Ver pedido</button>
     </div>
   </section>
 

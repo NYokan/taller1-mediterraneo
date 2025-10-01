@@ -73,11 +73,74 @@ goToRegistro?.addEventListener('click', (e) => {
   registroModal.style.display = 'flex';
 });
 
-/* =========================
-   Botones Agregar (demo S3)
-========================= */
-document.querySelectorAll('.card button').forEach(btn => {
+// Carrito en memoria (se puede guardar en localStorage después)
+let carrito = [];
+
+// Seleccionar botones de agregar
+document.querySelectorAll('.card button').forEach((btn, index) => {
   btn.addEventListener('click', () => {
-    alert('Producto agregado (demo – Sprint 3)');
+    const card = btn.closest('.card');
+    const nombre = card.querySelector('h3').textContent;
+    const precio = parseInt(card.querySelector('p').textContent.replace('$','').replace('.',''));
+    
+    // Buscar si ya está en carrito
+    const item = carrito.find(p => p.nombre === nombre);
+    if(item){
+      item.cantidad++;
+    } else {
+      carrito.push({ nombre, precio, cantidad: 1 });
+    }
+
+    actualizarBarraPedido();
   });
 });
+
+// Actualizar barra de pedido
+function actualizarBarraPedido(){
+  const totalItems = carrito.reduce((acc, p) => acc + p.cantidad, 0);
+  const totalPrecio = carrito.reduce((acc, p) => acc + (p.precio * p.cantidad), 0);
+
+  document.getElementById('totalItems').textContent = totalItems;
+  document.getElementById('totalPrecio').textContent = totalPrecio.toLocaleString();
+
+  const barra = document.getElementById('barraPedido');
+  if(totalItems > 0){
+    barra.classList.remove('is-hidden');
+  } else {
+    barra.classList.add('is-hidden');
+  }
+  actualizarContadorNavbar();
+  guardarCarrito();
+}
+
+// Sincroniza el contador del navbar con el carrito
+function actualizarContadorNavbar() {
+  const totalItems = carrito.reduce((acc, p) => acc + p.cantidad, 0);
+  const contador = document.getElementById('contadorCarrito');
+  if (contador) contador.textContent = totalItems;
+}
+
+// Guarda el carrito en localStorage
+function guardarCarrito() {
+  localStorage.setItem('carrito', JSON.stringify(carrito));
+}
+
+// Cargar carrito al inicio
+function cargarCarrito() {
+  try {
+    carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+  } catch {
+    carrito = [];
+  }
+  actualizarBarraPedido();
+}
+
+// Redirigir a la página de pedido
+document.getElementById('verPedidoBtn').addEventListener('click', () => {
+  // Guardamos carrito en localStorage
+  localStorage.setItem('carrito', JSON.stringify(carrito));
+  window.location.href = "pedido.html"; 
+});
+
+// Init
+cargarCarrito();
