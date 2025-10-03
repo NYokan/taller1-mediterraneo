@@ -1,3 +1,76 @@
+// =============================
+// Gestión de Productos (Admin)
+// =============================
+let productos = JSON.parse(localStorage.getItem("productos")) || [
+  { nombre: "Pizza Margarita", precio: 8500, img: "pizz.png" },
+  { nombre: "Lasaña Boloñesa", precio: 9200, img: "lasaña.png" }
+];
+
+// Renderizar productos en la tabla
+function renderProductos() {
+  const tbody = document.getElementById("productosTabla");
+  tbody.innerHTML = "";
+
+  productos.forEach((p, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><img src="img/${p.img}" alt="${p.nombre}"></td>
+      <td>${p.nombre}</td>
+      <td>$${p.precio}</td>
+      <td>
+        <button class="btn-editar" onclick="editarProducto(${i})">Editar</button>
+        <button class="btn-eliminar" onclick="eliminarProducto(${i})">Eliminar</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  localStorage.setItem("productos", JSON.stringify(productos));
+}
+
+// Agregar producto
+const productoForm = document.getElementById("productoForm");
+if (productoForm) {
+  productoForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const nombre = document.getElementById("nombreProducto").value.trim();
+    const precio = parseInt(document.getElementById("precioProducto").value);
+    const img = document.getElementById("imgProducto").value.trim();
+
+    productos.push({ nombre, precio, img });
+    renderProductos();
+
+    productoForm.reset();
+  });
+}
+
+// Editar producto
+function editarProducto(index) {
+  const nuevoNombre = prompt("Nuevo nombre:", productos[index].nombre);
+  const nuevoPrecio = prompt("Nuevo precio:", productos[index].precio);
+  const nuevaImg = prompt("Nueva imagen (ruta):", productos[index].img);
+
+  if (nuevoNombre && nuevoPrecio && nuevaImg) {
+    productos[index] = { nombre: nuevoNombre, precio: parseInt(nuevoPrecio), img: nuevaImg };
+    renderProductos();
+  }
+}
+
+// Eliminar producto
+function eliminarProducto(index) {
+  if (confirm("¿Eliminar este producto?")) {
+    productos.splice(index, 1);
+    renderProductos();
+  }
+}
+
+// Mostrar gestión
+function showGestion() {
+  document.querySelectorAll(".view").forEach(v => v.classList.add("is-hidden"));
+  document.getElementById("gestion").classList.remove("is-hidden");
+  renderProductos();
+  setActive("gestion");
+}
 /* =========================
    Selección de elementos
 ========================= */
@@ -9,7 +82,100 @@ const menuLink     = document.getElementById('menuLink');
 const nosotrosLink = document.getElementById('nosotrosLink');
 const usuarioLink  = document.getElementById('usuarioLink');
 
-const navLinks = [menuLink, nosotrosLink, usuarioLink];
+const reportesLink = document.getElementById('reportesLink');
+const navLinks = [menuLink, nosotrosLink, usuarioLink, reportesLink];
+
+// =========================
+// Simulación: usuario admin
+// =========================
+const ADMIN_EMAIL = "admin@laterraza.cl";
+const ADMIN_PASS = "123456";
+
+function login(email, pass) {
+  if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
+    localStorage.setItem("userRole", "admin");
+    alert("Has iniciado sesión como ADMINISTRADOR");
+    renderNavbar();
+    showHome();
+  } else {
+    localStorage.setItem("userRole", "cliente");
+    alert("Bienvenido cliente");
+    renderNavbar();
+    showHome();
+  }
+}
+
+// Navbar dinámica según rol
+function renderNavbar() {
+  const nav = document.querySelector(".nav");
+  const role = localStorage.getItem("userRole") || "cliente";
+
+  // Reiniciar navbar
+  nav.innerHTML = `
+    <a href="#" class="nav__link" id="menuLink">Menú</a>
+    <a href="#" class="nav__link" id="nosotrosLink">Nosotros</a>
+    <a href="#" class="nav__link" id="reservasLink">Pedido</a>
+    <a href="#" class="nav__link" id="usuarioLink">Usuario</a>
+  `;
+
+  // Si es admin, añadir opciones extra
+  if (role === "admin") {
+    nav.innerHTML += `
+      <a href="#" class="nav__link" id="reportesLink">Reportes</a>
+      <a href="#" class="nav__link" id="gestionLink">Gestión de Productos</a>
+    `;
+  }
+
+  // Reasignar listeners después de regenerar
+  setNavListeners();
+}
+
+// Asignar listeners a la navbar dinámica
+function setNavListeners() {
+  const menuLink = document.getElementById("menuLink");
+  if (menuLink) menuLink.addEventListener("click", (e) => { e.preventDefault(); showMenu(); });
+
+  const nosotrosLink = document.getElementById("nosotrosLink");
+  if (nosotrosLink) nosotrosLink.addEventListener("click", (e) => { e.preventDefault(); showNosotros(); });
+
+  const reservasLink = document.getElementById("reservasLink");
+  if (reservasLink) reservasLink.addEventListener("click", (e) => { e.preventDefault(); showPedido(); });
+
+  const usuarioLink = document.getElementById("usuarioLink");
+  if (usuarioLink) usuarioLink.addEventListener("click", (e) => { e.preventDefault(); showLogin(); });
+
+  const reportesLink = document.getElementById("reportesLink");
+  if (reportesLink) reportesLink.addEventListener("click", (e) => { e.preventDefault(); showReportes(); });
+
+  const gestionLink = document.getElementById("gestionLink");
+  if (gestionLink) gestionLink.addEventListener("click", (e) => { e.preventDefault(); showGestion(); });
+}
+
+// Stubs para las funciones de navegación si no existen
+if (typeof showNosotros !== "function") {
+  function showNosotros() {
+    // Implementa la lógica para mostrar la sección Nosotros
+    alert("Vista Nosotros (implementa showNosotros)");
+  }
+}
+if (typeof showPedido !== "function") {
+  function showPedido() {
+    // Implementa la lógica para mostrar la sección Pedido
+    alert("Vista Pedido (implementa showPedido)");
+  }
+}
+if (typeof showLogin !== "function") {
+  function showLogin() {
+    // Implementa la lógica para mostrar el modal/login
+    if (loginModal) loginModal.style.display = 'flex';
+  }
+}
+if (typeof showGestion !== "function") {
+  function showGestion() {
+    // Implementa la lógica para mostrar la gestión de productos
+    alert("Vista Gestión de Productos (implementa showGestion)");
+  }
+}
 
 /* Modales (Sprint 2) */
 const loginModal    = document.getElementById('loginModal');
@@ -46,6 +212,23 @@ function showMenu() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// =========================
+// Mostrar Reportes (Admin)
+// =========================
+function showReportes() {
+  // Ocultar todas las vistas
+  document.querySelectorAll(".view").forEach(v => v.classList.add("is-hidden"));
+
+  // Mostrar reportes
+  document.getElementById("reportes").classList.remove("is-hidden");
+
+  // Renderizar métricas
+  renderReportes();
+
+  // Actualizar navbar activa
+  setActive("reportes");
+}
+
 /* Eventos navbar */
 if (homeLink) {
   homeLink.addEventListener('click', (e) => { e.preventDefault(); showHome(); });
@@ -55,6 +238,12 @@ if (menuLink) {
 }
 if (nosotrosLink) {
   nosotrosLink.addEventListener('click', (e) => { e.preventDefault(); showHome(); });
+}
+if (reportesLink) {
+  reportesLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    showReportes();
+  });
 }
 
 /* =========================
@@ -245,17 +434,18 @@ function renderBoleta() {
 }
 
 // Llamar renderBoleta cuando se muestre la vista
+
 document.addEventListener("DOMContentLoaded", () => {
-  if (!document.getElementById("boleta")) return;
-  renderBoleta();
+  renderNavbar();
+  if (document.getElementById("boleta")) {
+    renderBoleta();
+  }
 });
 
 const volverInicio = document.getElementById("volverInicio");
 if (volverInicio) {
   volverInicio.addEventListener("click", () => {
-    document.getElementById("boleta").classList.add("is-hidden");
-    document.getElementById("home").classList.remove("is-hidden");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    showHome();
   });
 }
 
@@ -277,4 +467,38 @@ function showBoleta() {
 // Mostrar boleta si la URL tiene #boleta
 if (window.location.hash === "#boleta") {
   showBoleta();
+}
+
+// =============================
+// Reportes (Admin)
+// =============================
+function renderReportes() {
+  const boletaHistorial = JSON.parse(localStorage.getItem("boletaHistorial")) || [];
+
+  // Calcular total de ventas
+  let totalVentas = 0;
+  let cantidadPedidos = boletaHistorial.length;
+  let productoPopular = "-";
+  const contadorProductos = {};
+
+  boletaHistorial.forEach(b => {
+    totalVentas += b.total;
+
+    b.items.forEach(item => {
+      // Usa 'nombre' y 'cantidad' si así se llaman en tu sistema
+      const nombre = item.nombre || item.name;
+      const cantidad = item.cantidad || item.quantity;
+      contadorProductos[nombre] = (contadorProductos[nombre] || 0) + cantidad;
+    });
+  });
+
+  // Producto más vendido
+  if (Object.keys(contadorProductos).length > 0) {
+    productoPopular = Object.entries(contadorProductos).sort((a, b) => b[1] - a[1])[0][0];
+  }
+
+  // Pintar en HTML
+  document.getElementById("reporteTotalVentas").textContent = `$${totalVentas.toLocaleString()}`;
+  document.getElementById("reporteCantidadPedidos").textContent = cantidadPedidos;
+  document.getElementById("reporteProductoPopular").textContent = productoPopular;
 }
