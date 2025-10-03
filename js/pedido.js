@@ -99,7 +99,29 @@ document.getElementById('btnVaciar')?.addEventListener('click', () => {
 // Confirmar (mock)
 document.getElementById('btnConfirmar')?.addEventListener('click', () => {
   if (!carrito.length) return alert('Tu carrito está vacío.');
-  alert('✅ Pedido confirmado (simulado). ¡Gracias!');
+
+  // Guardar boleta en localStorage
+  const boleta = {
+    fecha: new Date().toLocaleString(),
+    items: carrito,
+    total: carrito.reduce((acc, it) => acc + it.cantidad * it.precio, 0)
+  };
+  localStorage.setItem('boleta', JSON.stringify(boleta));
+
+  // Mostrar popup
+  const popup = document.getElementById("pedidoPopup");
+  popup.classList.remove("is-hidden");
+
+  // Después de 1.5s ocultar popup y mostrar boleta
+  setTimeout(() => {
+    popup.classList.add("is-hidden");
+    // Ocultar la vista de pedido y mostrar la boleta
+    document.querySelectorAll(".view").forEach(v => v.classList.add("is-hidden"));
+    document.getElementById("boleta").classList.remove("is-hidden");
+    if (typeof renderBoleta === "function") renderBoleta();
+  }, 1500);
+
+  // Vaciar carrito
   carrito = [];
   guardar();
   render();
