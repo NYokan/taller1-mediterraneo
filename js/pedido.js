@@ -108,23 +108,13 @@ document.getElementById('btnConfirmar')?.addEventListener('click', () => {
   };
   localStorage.setItem('boleta', JSON.stringify(boleta));
 
-  // Mostrar popup
-  const popup = document.getElementById("pedidoPopup");
-  popup.classList.remove("is-hidden");
-
-  // Después de 1.5s ocultar popup y mostrar boleta
-  setTimeout(() => {
-    popup.classList.add("is-hidden");
-    // Ocultar la vista de pedido y mostrar la boleta
-    document.querySelectorAll(".view").forEach(v => v.classList.add("is-hidden"));
-    document.getElementById("boleta").classList.remove("is-hidden");
-    if (typeof renderBoleta === "function") renderBoleta();
-  }, 1500);
-
   // Vaciar carrito
   carrito = [];
   guardar();
   render();
+
+  // Redirigir a index.html y mostrar la boleta
+  window.location.href = "index.html#boleta";
 });
 
 // Init

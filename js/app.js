@@ -273,3 +273,8 @@ function showBoleta() {
   // Actualizar navegación activa (si usas subrayado de navbar)
   setActive("boleta");
 }
+
+// Mostrar boleta si la URL tiene #boleta
+if (window.location.hash === "#boleta") {
+  showBoleta();
+}
