@@ -1,4 +1,31 @@
 /* =========================
+   Fuente Inter global
+========================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+body, .view, .nav__link, .btn, input, select, textarea, table, th, td, label, p, ul, li, .footer, .card, .popup, #nosotros, #gestion, #reportes, #boleta, #pedido, #pago {
+  font-family: 'Inter', Arial, sans-serif;
+}
+
+/* Excepción: mantener fuente original en el nombre 'La Terraza' */
+.logo, .logo span, .nombre-terraza, .nombre-terraza * {
+  font-family: 'Pacifico', cursive !important;
+}
+
+/* =========================
+   Transiciones suaves entre pantallas
+========================= */
+.view {
+  opacity: 1;
+  transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1);
+  will-change: opacity;
+}
+.view.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+/* =========================
    Sección Nosotros
 ========================= */
 #nosotros {
