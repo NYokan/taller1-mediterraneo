@@ -1,6 +1,4 @@
-// =============================
 // Gestión de Productos (Admin)
-// =============================
 let productos = JSON.parse(localStorage.getItem("productos")) || [
   { nombre: "Pizza Margarita", precio: 8500, img: "pizz.png" },
   { nombre: "Lasaña Boloñesa", precio: 9200, img: "lasaña.png" }
@@ -64,30 +62,22 @@ function eliminarProducto(index) {
   }
 }
 
-// Mostrar gestión
 function showGestion() {
   document.querySelectorAll(".view").forEach(v => v.classList.add("is-hidden"));
   document.getElementById("gestion").classList.remove("is-hidden");
   renderProductos();
   setActive("gestion");
 }
-/* =========================
-   Selección de elementos
-========================= */
-const homeView   = document.getElementById('home');
-const menuView   = document.getElementById('menu');
+// Elementos principales de vistas
+const homeView = document.getElementById('home');
+const menuView = document.getElementById('menu');
 
-// Funciones para obtener links actuales de la navbar
+// Utilidades para navbar dinámica
 function getNavLinks() {
   return Array.from(document.querySelectorAll('.nav__link'));
 }
-function getLinkById(id) {
-  return document.getElementById(id);
-}
 
-// =========================
 // Simulación: usuario admin
-// =========================
 const ADMIN_EMAIL = "admin@laterraza.cl";
 const ADMIN_PASS = "123456";
 
@@ -171,9 +161,6 @@ function setNavListeners() {
   if (gestionLink) gestionLink.addEventListener("click", (e) => { e.preventDefault(); showGestion(); });
 }
 
-// Listener del link "Nosotros"
-// El listener de nosotrosLink se agrega más abajo, no es necesario aquí
-
 // Mostrar vista "Nosotros"
 function showNosotros() {
   // Ocultar todas las vistas
@@ -188,26 +175,9 @@ function showNosotros() {
   // Subir al inicio
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-if (typeof showPedido !== "function") {
-  function showPedido() {
-    // Implementa la lógica para mostrar la sección Pedido
-    alert("Vista Pedido (implementa showPedido)");
-  }
-}
-if (typeof showLogin !== "function") {
-  function showLogin() {
-    // Implementa la lógica para mostrar el modal/login
-    if (loginModal) loginModal.style.display = 'flex';
-  }
-}
-if (typeof showGestion !== "function") {
-  function showGestion() {
-    // Implementa la lógica para mostrar la gestión de productos
-    alert("Vista Gestión de Productos (implementa showGestion)");
-  }
-}
+// showPedido y showLogin ya están implementadas correctamente o no son necesarias como stubs
 
-/* Modales (Sprint 2) */
+// Modales
 const loginModal    = document.getElementById('loginModal');
 const registroModal = document.getElementById('registroModal');
 const closeBtns     = document.querySelectorAll('.close');
@@ -218,9 +188,7 @@ const confirmarBtn = document.querySelector(".btn-confirmar-pedido");
 const pagoView = document.getElementById("pago");
 const pedidoView = document.getElementById("pedido");
 
-/* =========================
-   Navegación de vistas
-========================= */
+// Navegación de vistas
 function setActive(link) {
   getNavLinks().forEach(a => {
     if (a) a.classList.remove('is-active');
@@ -248,9 +216,7 @@ function showMenu() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// =========================
 // Mostrar Reportes (Admin)
-// =========================
 function showReportes() {
   // Ocultar todas las vistas
   document.querySelectorAll(".view").forEach(v => v.classList.add("is-hidden"));
@@ -265,11 +231,9 @@ function showReportes() {
   setActive("reportes");
 }
 
-// Eventos navbar iniciales eliminados: ahora los listeners se asignan dinámicamente tras renderNavbar()
 
-/* =========================
-   Modal Login / Registro
-========================= */
+
+// Modal Login / Registro
 usuarioLink?.addEventListener('click', (e) => {
   e.preventDefault();
   if (loginModal) loginModal.style.display = 'flex';
@@ -293,7 +257,7 @@ goToRegistro?.addEventListener('click', (e) => {
   if (registroModal) registroModal.style.display = 'flex';
 });
 
-// Carrito en memoria (se puede guardar en localStorage después)
+// Carrito en memoria
 let carrito = [];
 
 // Seleccionar botones de agregar
@@ -429,9 +393,7 @@ if (confirmarPedidoBtn) {
   });
 }
 
-// =============================
 // Renderizar Boleta Digital
-// =============================
 function renderBoleta() {
   const boleta = JSON.parse(localStorage.getItem('boleta'));
   if (!boleta) return;
@@ -454,7 +416,7 @@ function renderBoleta() {
   document.getElementById("boletaTotal").textContent = `$${boleta.total.toLocaleString()}`;
 }
 
-// Llamar renderBoleta cuando se muestre la vista
+
 
 document.addEventListener("DOMContentLoaded", () => {
   renderNavbar();
@@ -470,7 +432,7 @@ if (volverInicio) {
   });
 }
 
-// Nueva función para mostrar la boleta
+// Mostrar la boleta
 function showBoleta() {
   // Ocultar todas las vistas
   document.querySelectorAll(".view").forEach(v => v.classList.add("is-hidden"));
@@ -490,9 +452,7 @@ if (window.location.hash === "#boleta") {
   showBoleta();
 }
 
-// =============================
 // Reportes (Admin)
-// =============================
 function renderReportes() {
   const boletaHistorial = JSON.parse(localStorage.getItem("boletaHistorial")) || [];
 
