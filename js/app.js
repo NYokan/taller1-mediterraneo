@@ -95,27 +95,13 @@ function login(email, pass) {
   if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
     localStorage.setItem("userRole", "admin");
     alert("Has iniciado sesión como ADMINISTRADOR");
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", () => {
-        renderNavbar();
-        showHome();
-      }, { once: true });
-    } else {
-      renderNavbar();
-      showHome();
-    }
+    renderNavbar();
+    showHome();
   } else {
     localStorage.setItem("userRole", "cliente");
     alert("Bienvenido cliente");
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", () => {
-        renderNavbar();
-        showHome();
-      }, { once: true });
-    } else {
-      renderNavbar();
-      showHome();
-    }
+    renderNavbar();
+    showHome();
   }
 }
 
@@ -171,22 +157,12 @@ function setNavListeners() {
   if (gestionLink) gestionLink.addEventListener("click", (e) => { e.preventDefault(); showGestion(); });
 }
 
-// Listener del link "Nosotros"
-// El listener de nosotrosLink se agrega más abajo, no es necesario aquí
-
-// Mostrar vista "Nosotros"
-function showNosotros() {
-  // Ocultar todas las vistas
-  document.querySelectorAll('.view').forEach(v => v.classList.add('is-hidden'));
-
-  // Mostrar nosotros
-  document.getElementById('nosotros').classList.remove('is-hidden');
-
-  // Marcar activo en navbar (si usas subrayado)
-  setActive('nosotros');
-
-  // Subir al inicio
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+// Stubs para las funciones de navegación si no existen
+if (typeof showNosotros !== "function") {
+  function showNosotros() {
+    // Implementa la lógica para mostrar la sección Nosotros
+    alert("Vista Nosotros (implementa showNosotros)");
+  }
 }
 if (typeof showPedido !== "function") {
   function showPedido() {
@@ -225,19 +201,17 @@ function setActive(link) {
   getNavLinks().forEach(a => {
     if (a) a.classList.remove('is-active');
   });
-  // Si link es string, buscar el link por id
-  if (typeof link === 'string') {
-    const el = document.getElementById(link + 'Link');
-    if (el) el.classList.add('is-active');
-  } else if (link && link.classList) {
-    link.classList.add('is-active');
-  }
+  if (link) link.classList.add('is-active');
 }
 
 function showHome() {
+  // Ocultar todas las vistas
+  document.querySelectorAll('.view').forEach(v => v.classList.add('is-hidden'));
+  // Mostrar solo home
   homeView.classList.remove('is-hidden');
-  menuView.classList.add('is-hidden');
   setActive(null); // Inicio sin activo
+  // Eliminar boleta del localStorage para que no quede persistente
+  localStorage.removeItem('boleta');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -270,10 +244,7 @@ function showReportes() {
 /* =========================
    Modal Login / Registro
 ========================= */
-usuarioLink?.addEventListener('click', (e) => {
-  e.preventDefault();
-  if (loginModal) loginModal.style.display = 'flex';
-});
+// El listener de usuarioLink ahora se asigna siempre en setNavListeners
 
 closeBtns.forEach(btn => {
   btn.addEventListener('click', () => {

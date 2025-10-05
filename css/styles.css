@@ -1,72 +1,8 @@
 /* =========================
-   Sección Nosotros
-========================= */
-#nosotros {
-  background: #f8f8f8;
-  padding: 3rem 1.5rem 3rem 1.5rem;
-  border-radius: 1.2rem;
-  margin: 2rem auto 2rem auto;
-  max-width: 900px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-  text-align: center;
-}
-#nosotros h2 {
-  font-size: 2.2rem;
-  color: #2d3a4a;
-  margin-bottom: 1.2rem;
-  letter-spacing: 1px;
-}
-#nosotros p {
-  font-size: 1.15rem;
-  color: #444;
-  line-height: 1.7;
-  margin-bottom: 1.5rem;
-}
-#nosotros ul {
-  list-style: disc inside;
-  text-align: left;
-  margin: 0 auto 1.5rem auto;
-  max-width: 700px;
-  color: #333;
-}
-#nosotros ul li {
-  margin-bottom: 0.5rem;
-  font-size: 1.08rem;
-}
-#nosotros strong {
-  color: #1a7a5a;
-}
-/* =========================
-   Footer
-========================= */
-.footer {
-  background: var(--color-brown);
-  color: #fff;
-  text-align: center;
-  padding: 2rem 1rem 1.2rem 1rem;
-  font-size: 1rem;
-  margin-top: 3rem;
-}
-
-.footer p {
-  margin: 0.2rem 0;
-  letter-spacing: 0.01em;
-}
-/* Padding superior para todas las vistas principales por navbar fija */
-.view--home,
-.view--menu,
-.view--pedido,
-.view--pago,
-.view--boleta,
-.view--reportes,
-.view--gestion {
-  padding-top: 6.5rem !important;
-}
-/* =========================
    Gestión de Productos (Admin)
 ========================= */
 .view--gestion {
-  padding: 6.5rem 1.5rem 3rem 1.5rem; /* padding-top aumentado para navbar fija */
+  padding: 3rem 1.5rem;
   max-width: 900px;
   margin: 0 auto;
 }
@@ -674,7 +610,7 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
    Boleta Digital (Sprint 3)
 ========================= */
 .view--boleta {
-  padding: 6.5rem 1.5rem 3rem 1.5rem; /* padding-top aumentado para navbar fija */
+  padding: 3rem 1.5rem;
   max-width: 800px;
   margin: 0 auto;
 }
