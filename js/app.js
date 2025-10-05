@@ -77,13 +77,13 @@ function showGestion() {
 const homeView   = document.getElementById('home');
 const menuView   = document.getElementById('menu');
 
-const homeLink     = document.getElementById('homeLink');
-const menuLink     = document.getElementById('menuLink');
-const nosotrosLink = document.getElementById('nosotrosLink');
-const usuarioLink  = document.getElementById('usuarioLink');
-
-const reportesLink = document.getElementById('reportesLink');
-const navLinks = [menuLink, nosotrosLink, usuarioLink, reportesLink];
+// Funciones para obtener links actuales de la navbar
+function getNavLinks() {
+  return Array.from(document.querySelectorAll('.nav__link'));
+}
+function getLinkById(id) {
+  return document.getElementById(id);
+}
 
 // =========================
 // Simulación: usuario admin
@@ -146,6 +146,12 @@ function renderNavbar() {
 
 // Asignar listeners a la navbar dinámica
 function setNavListeners() {
+  // Eliminar listeners previos usando cloneNode para evitar duplicados
+  getNavLinks().forEach(link => {
+    const newLink = link.cloneNode(true);
+    link.parentNode.replaceChild(newLink, link);
+  });
+
   const menuLink = document.getElementById("menuLink");
   if (menuLink) menuLink.addEventListener("click", (e) => { e.preventDefault(); showMenu(); });
 
@@ -216,7 +222,7 @@ const pedidoView = document.getElementById("pedido");
    Navegación de vistas
 ========================= */
 function setActive(link) {
-  navLinks.forEach(a => {
+  getNavLinks().forEach(a => {
     if (a) a.classList.remove('is-active');
   });
   // Si link es string, buscar el link por id
@@ -259,22 +265,7 @@ function showReportes() {
   setActive("reportes");
 }
 
-/* Eventos navbar */
-if (homeLink) {
-  homeLink.addEventListener('click', (e) => { e.preventDefault(); showHome(); });
-}
-if (menuLink) {
-  menuLink.addEventListener('click', (e) => { e.preventDefault(); showMenu(); });
-}
-if (nosotrosLink) {
-  nosotrosLink.addEventListener('click', (e) => { e.preventDefault(); showHome(); });
-}
-if (reportesLink) {
-  reportesLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    showReportes();
-  });
-}
+// Eventos navbar iniciales eliminados: ahora los listeners se asignan dinámicamente tras renderNavbar()
 
 /* =========================
    Modal Login / Registro
