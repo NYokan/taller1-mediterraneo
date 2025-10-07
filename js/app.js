@@ -137,8 +137,38 @@ function setNavListeners() {
   const reservasLink = document.getElementById("reservasLink");
   if (reservasLink) reservasLink.addEventListener("click", (e) => { e.preventDefault(); showPedido(); });
 
+  // Mostrar Login (abrir modal)
+  function showLogin() {
+    // ocultar vistas si usas sistema de vistas
+    document.querySelectorAll('.view').forEach(v => v.classList.add('is-hidden'));
+    // mostrar modal
+    if (loginModal) loginModal.style.display = 'flex';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Asegurar listener del link "Usuario" en setNavListeners()
+  // (si ya existe, confirma que llama a showLogin())
   const usuarioLink = document.getElementById("usuarioLink");
-  if (usuarioLink) usuarioLink.addEventListener("click", (e) => { e.preventDefault(); showLogin(); });
+  if (usuarioLink) {
+    usuarioLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      showLogin();
+    });
+  }
+
+  // Conectar formulario de login dentro del modal (si existe)
+  const loginForm = document.querySelector('#loginModal form') || document.getElementById('loginForm');
+  if (loginForm) {
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const emailInput = loginForm.querySelector('input[name="email"]') || document.getElementById('loginEmail');
+      const passInput  = loginForm.querySelector('input[name="password"]') || document.getElementById('loginPass');
+      const email = emailInput ? emailInput.value.trim() : '';
+      const pass  = passInput  ? passInput.value.trim()  : '';
+      login(email, pass);
+      if (loginModal) loginModal.style.display = 'none';
+    });
+  }
 
   const reportesLink = document.getElementById("reportesLink");
   if (reportesLink) reportesLink.addEventListener("click", (e) => { e.preventDefault(); showReportes(); });
