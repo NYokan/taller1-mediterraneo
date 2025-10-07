@@ -597,6 +597,54 @@ function showBoleta() {
   setActive(null); // sin enlace específico en navbar
 }
 
+/* === Submit del formulario de pago -> generar boleta y mostrarla === */
+const pagoForm = document.getElementById("pagoForm");
+if (pagoForm) {
+  pagoForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    // Validación básica
+    const nombre    = document.getElementById("nombre")?.value.trim();
+    const direccion = document.getElementById("direccion")?.value.trim();
+    const metodo    = document.getElementById("metodo")?.value;
+
+    if (!nombre || !direccion || !metodo) {
+      alert("Por favor, completa todos los campos.");
+      return;
+    }
+    if (!carrito || carrito.length === 0) {
+      alert("Tu carrito está vacío.");
+      return;
+    }
+
+    // Crear boleta
+    const total = carrito.reduce((acc, i) => acc + (i.precio * i.cantidad), 0);
+    const boleta = {
+      fecha: new Date().toLocaleString(),
+      cliente: { nombre, direccion, metodo },
+      items: carrito.map(i => ({ nombre: i.nombre, cantidad: i.cantidad, precio: i.precio })),
+      total
+    };
+
+    // Guardar boleta actual
+    localStorage.setItem("boleta", JSON.stringify(boleta));
+
+    // Guardar en historial
+    const historial = JSON.parse(localStorage.getItem("boletaHistorial")) || [];
+    historial.push(boleta);
+    localStorage.setItem("boletaHistorial", JSON.stringify(historial));
+
+    // Vaciar carrito y actualizar UI
+    carrito = [];
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+    actualizarBarraPedido();
+
+    // Mostrar Boleta
+    document.getElementById("pago")?.classList.add("is-hidden");
+    showBoleta();
+  });
+}
+
 /* =========================
    Reportes
 ========================= */
