@@ -1,5 +1,5 @@
 /**********************************************************
- * La Terraza - app.js (versión completa con mejoras)
+ * La Terraza - app.js (SPA con carrito/pedido funcionando)
  **********************************************************/
 
 /* =========================
@@ -95,7 +95,7 @@ function showGestion() {
 }
 
 /* =========================
-   Vistas principales
+   Vistas principales / Modales
 ========================= */
 const homeView = document.getElementById('home');
 const menuView = document.getElementById('menu');
@@ -115,7 +115,6 @@ function login(email, pass) {
     setUser(email, "admin");
     alert("Has iniciado sesión como ADMINISTRADOR");
   } else {
-    // Cliente genérico con cualquier correo/clave
     setUser(email || "cliente@correo.com", "cliente");
     alert("Has iniciado sesión como CLIENTE");
   }
@@ -138,7 +137,6 @@ function renderNavbar() {
   if (!nav) return;
   const { role, email } = getUser();
 
-  // Base (siempre visibles)
   nav.innerHTML = `
     <a href="#" class="nav__link" id="menuLink">Menú</a>
     <a href="#" class="nav__link" id="nosotrosLink">Nosotros</a>
@@ -146,7 +144,6 @@ function renderNavbar() {
     <a href="#" class="nav__link" id="usuarioLink">${isLoggedIn() ? (email || "Cuenta") : "Usuario"}</a>
   `;
 
-  // Admin extra
   if (role === "admin") {
     nav.innerHTML += `
       <a href="#" class="nav__link" id="reportesLink">Reportes</a>
@@ -154,22 +151,16 @@ function renderNavbar() {
     `;
   }
 
-  // Crear/actualizar panel de usuario
   ensureUserPanel();
   updateUserPanel(email, role);
-
   setNavListeners();
 }
 
-/* =========================
-   Listeners Navbar
-========================= */
 function getNavLinks() {
   return Array.from(document.querySelectorAll('.nav__link'));
 }
 
 function setNavListeners() {
-  // Evitar duplicados
   getNavLinks().forEach(link => {
     const newLink = link.cloneNode(true);
     link.parentNode.replaceChild(newLink, link);
@@ -179,17 +170,12 @@ function setNavListeners() {
   document.getElementById("nosotrosLink")?.addEventListener("click", (e) => { e.preventDefault(); showNosotros(); });
   document.getElementById("reservasLink")?.addEventListener("click", (e) => { e.preventDefault(); showPedido(); });
 
-  // Usuario: si hay sesión, abrir panel; si no, abrir login
   document.getElementById("usuarioLink")?.addEventListener("click", (e) => {
     e.preventDefault();
-    if (isLoggedIn()) {
-      openUserPanel();
-    } else {
-      showLogin();
-    }
+    if (isLoggedIn()) openUserPanel();
+    else showLogin();
   });
 
-  // Login form (flexible con tus inputs)
   const loginForm = document.querySelector('#loginModal form') || document.getElementById('loginForm');
   if (loginForm) {
     loginForm.addEventListener('submit', (e) => {
@@ -209,7 +195,6 @@ function setNavListeners() {
   document.getElementById("reportesLink")?.addEventListener("click", (e) => { e.preventDefault(); showReportes(); });
   document.getElementById("gestionLink")?.addEventListener("click", (e) => { e.preventDefault(); showGestion(); });
 
-  // User Panel buttons
   document.getElementById("logoutBtn")?.addEventListener("click", (e) => {
     e.preventDefault();
     closeUserPanel();
@@ -221,7 +206,6 @@ function setNavListeners() {
     showLogin();
   });
 
-  // Home logo
   document.getElementById("homeLink")?.addEventListener("click", (e) => {
     e.preventDefault();
     showHome();
@@ -335,40 +319,22 @@ function showNosotros() {
   setActive('nosotros');
 }
 
-function showPedido() {
-  // Mostrar vista de pedido (SPA)
-  document.querySelectorAll('.view').forEach(v => v.classList.add('is-hidden'));
-  const pedido = document.getElementById('pedido');
-  if (pedido) pedido.classList.remove('is-hidden');
-  setActive('reservas');
-
-  const vacio = (carrito || []).reduce((a, p) => a + p.cantidad, 0) === 0;
-  if (vacio) {
-    const ir = confirm("Tu carrito está vacío. ¿Deseas realizar un pedido? (Ir al Menú)");
-    if (ir) showMenu();
-  } else {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-}
-
-function showReportes() {
-  document.querySelectorAll(".view").forEach(v => v.classList.add("is-hidden"));
-  const r = document.getElementById("reportes");
-  if (r) r.classList.remove("is-hidden");
-  renderReportes();
-  setActive("reportes");
-}
-
 /* =========================
    Carrito
 ========================= */
 let carrito = [];
 
+function parsePrecio(str) {
+  // Convierte "$12.500" -> 12500, "$7,800" -> 7800, etc.
+  return parseInt(String(str).replace(/[^\d]/g, ''), 10) || 0;
+}
+
+// Agregar desde cards del menú
 document.querySelectorAll('.card button').forEach((btn) => {
   btn.addEventListener('click', () => {
     const card = btn.closest('.card');
     const nombre = card.querySelector('h3').textContent;
-    const precio = parseInt(card.querySelector('p').textContent.replace('$','').replace('.',''));
+    const precio = parsePrecio(card.querySelector('p').textContent);
     const imagen = card.querySelector('img').getAttribute('src');
 
     const item = carrito.find(p => p.nombre === nombre);
@@ -410,12 +376,144 @@ function cargarCarrito() {
   actualizarBarraPedido();
 }
 
-// Botón “Ver pedido”
-const verPedidoBtn = document.getElementById('verPedidoBtn');
-if (verPedidoBtn) {
-  verPedidoBtn.addEventListener('click', () => {
-    showPedido();
+/* =========================
+   Vista Pedido (SPA)
+========================= */
+function ensurePedidoDOM() {
+  const pedido = document.getElementById('pedido');
+  if (!pedido) return;
+
+  // Si la vista está vacía, creamos el contenido base
+  if (!pedido.dataset.built) {
+    pedido.innerHTML = `
+      <h2>Tu Pedido</h2>
+      <ul id="pedidoList" class="pedido-list"></ul>
+      <p id="pedidoVacio" class="muted" style="display:none;">
+        Tu carrito está vacío. <a href="#" id="irMenuDesdeVacio" class="nav__link">Ir al menú</a>
+      </p>
+      <div id="pedidoResumen" class="pedido-resumen" style="display:none;">
+        <div>
+          <strong>Productos:</strong> <span id="resumenItems">0</span> ·
+          <strong>Total:</strong> $<span id="resumenTotal">0</span>
+        </div>
+        <div class="acciones">
+          <button id="btnVaciar">Vaciar carrito</button>
+          <button id="btnConfirmar">Confirmar pedido</button>
+        </div>
+      </div>
+    `;
+    pedido.dataset.built = "1";
+
+    // Listeners locales de la vista pedido
+    document.getElementById('irMenuDesdeVacio')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      showMenu();
+    });
+    document.getElementById('btnVaciar')?.addEventListener('click', () => {
+      if (carrito.length === 0) return;
+      if (confirm('¿Vaciar carrito?')) {
+        carrito = [];
+        actualizarBarraPedido();
+        renderPedido();
+      }
+    });
+    document.getElementById('btnConfirmar')?.addEventListener('click', () => {
+      if (carrito.length === 0) {
+        alert('Tu carrito está vacío');
+        return;
+      }
+      // Pasar a vista pago
+      document.getElementById('pedido')?.classList.add('is-hidden');
+      document.getElementById('pago')?.classList.remove('is-hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+}
+
+function renderPedido() {
+  ensurePedidoDOM();
+
+  const list = document.getElementById('pedidoList');
+  const vacio = document.getElementById('pedidoVacio');
+  const resumen = document.getElementById('pedidoResumen');
+  const resumenItems = document.getElementById('resumenItems');
+  const resumenTotal = document.getElementById('resumenTotal');
+  if (!list || !vacio || !resumen || !resumenItems || !resumenTotal) return;
+
+  list.innerHTML = "";
+  if (carrito.length === 0) {
+    vacio.style.display = 'block';
+    resumen.style.display = 'none';
+    return;
+  }
+
+  vacio.style.display = 'none';
+  resumen.style.display = 'flex';
+
+  carrito.forEach((item, idx) => {
+    const li = document.createElement('li');
+    li.className = 'pedido-item';
+    li.innerHTML = `
+      <div class="pi-info">
+        <img class="pi-thumb" src="${item.imagen}" alt="${item.nombre}">
+        <div>
+          <h4>${item.nombre}</h4>
+          <small>$${item.precio.toLocaleString()} c/u</small>
+        </div>
+      </div>
+      <div class="pi-actions">
+        <button class="menos" data-i="${idx}">−</button>
+        <span>${item.cantidad}</span>
+        <button class="mas" data-i="${idx}">+</button>
+        <span class="pi-total">$${(item.precio * item.cantidad).toLocaleString()}</span>
+        <button class="eliminar" data-i="${idx}">Eliminar</button>
+      </div>
+    `;
+    list.appendChild(li);
   });
+
+  // Totales
+  const totalItems = carrito.reduce((a, p) => a + p.cantidad, 0);
+  const totalPrecio = carrito.reduce((a, p) => a + p.precio * p.cantidad, 0);
+  resumenItems.textContent = totalItems;
+  resumenTotal.textContent = totalPrecio.toLocaleString();
+
+  // Listeners de cada ítem
+  list.querySelectorAll('.menos').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const i = parseInt(btn.dataset.i, 10);
+      carrito[i].cantidad = Math.max(0, carrito[i].cantidad - 1);
+      if (carrito[i].cantidad === 0) carrito.splice(i, 1);
+      actualizarBarraPedido();
+      renderPedido();
+    });
+  });
+  list.querySelectorAll('.mas').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const i = parseInt(btn.dataset.i, 10);
+      carrito[i].cantidad += 1;
+      actualizarBarraPedido();
+      renderPedido();
+    });
+  });
+  list.querySelectorAll('.eliminar').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const i = parseInt(btn.dataset.i, 10);
+      carrito.splice(i, 1);
+      actualizarBarraPedido();
+      renderPedido();
+    });
+  });
+}
+
+function showPedido() {
+  document.querySelectorAll('.view').forEach(v => v.classList.add('is-hidden'));
+  const pedido = document.getElementById('pedido');
+  if (pedido) pedido.classList.remove('is-hidden');
+  setActive('reservas');
+
+  renderPedido(); // ← dibujar la vista con el estado actual del carrito
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /* =========================
@@ -455,7 +553,6 @@ if (cancelarPago) {
     document.getElementById("pago")?.classList.add("is-hidden");
     document.getElementById("pedido")?.classList.remove("is-hidden");
     window.scrollTo({ top: 0, behavior: "smooth" });
-    document.getElementById("home")?.classList.remove("is-hidden");
   });
 }
 
@@ -541,6 +638,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (window.location.hash === '#menu')   showMenu();
   if (window.location.hash === '#boleta') showBoleta();
+
+  // Botón “Ver pedido” (barra inferior del menú)
+  const verPedidoBtn = document.getElementById('verPedidoBtn');
+  if (verPedidoBtn) verPedidoBtn.addEventListener('click', () => showPedido());
 });
 
 const volverInicio = document.getElementById("volverInicio");
