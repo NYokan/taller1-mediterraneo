@@ -68,6 +68,7 @@ function showGestion() {
   renderProductos();
   setActive("gestion");
 }
+
 // Elementos principales de vistas
 const homeView = document.getElementById('home');
 const menuView = document.getElementById('menu');
@@ -139,15 +140,11 @@ function setNavListeners() {
 
   // Mostrar Login (abrir modal)
   function showLogin() {
-    // ocultar vistas si usas sistema de vistas
     document.querySelectorAll('.view').forEach(v => v.classList.add('is-hidden'));
-    // mostrar modal
     if (loginModal) loginModal.style.display = 'flex';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Asegurar listener del link "Usuario" en setNavListeners()
-  // (si ya existe, confirma que llama a showLogin())
   const usuarioLink = document.getElementById("usuarioLink");
   if (usuarioLink) {
     usuarioLink.addEventListener("click", (e) => {
@@ -179,19 +176,11 @@ function setNavListeners() {
 
 // Mostrar vista "Nosotros"
 function showNosotros() {
-  // Ocultar todas las vistas
   document.querySelectorAll('.view').forEach(v => v.classList.add('is-hidden'));
-
-  // Mostrar nosotros
   document.getElementById('nosotros').classList.remove('is-hidden');
-
-  // Marcar activo en navbar (si usas subrayado)
   setActive('nosotros');
-
-  // Subir al inicio
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-// showPedido y showLogin ya están implementadas correctamente o no son necesarias como stubs
 
 // Modales
 const loginModal    = document.getElementById('loginModal');
@@ -205,20 +194,18 @@ const pagoView = document.getElementById("pago");
 const pedidoView = document.getElementById("pedido");
 
 // Navegación de vistas
-function setActive(link) {
-  getNavLinks().forEach(a => {
-    if (a) a.classList.remove('is-active');
-  });
-  if (link) link.classList.add('is-active');
+function setActive(linkId) {
+  getNavLinks().forEach(a => a.classList.remove("is-active"));
+  if (linkId) {
+    const linkEl = document.getElementById(linkId + "Link");
+    if (linkEl) linkEl.classList.add("is-active");
+  }
 }
 
 function showHome() {
-  // Ocultar todas las vistas
   document.querySelectorAll('.view').forEach(v => v.classList.add('is-hidden'));
-  // Mostrar solo home
   homeView.classList.remove('is-hidden');
-  setActive(null); // Inicio sin activo
-  // Eliminar boleta del localStorage para que no quede persistente
+  setActive(null);
   localStorage.removeItem('boleta');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -226,33 +213,19 @@ function showHome() {
 function showMenu() {
   homeView.classList.add('is-hidden');
   menuView.classList.remove('is-hidden');
-  setActive(menuLink);
+  setActive("menu");
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // Mostrar Reportes (Admin)
 function showReportes() {
-  // Ocultar todas las vistas
   document.querySelectorAll(".view").forEach(v => v.classList.add("is-hidden"));
-
-  // Mostrar reportes
   document.getElementById("reportes").classList.remove("is-hidden");
-
-  // Renderizar métricas
   renderReportes();
-
-  // Actualizar navbar activa
   setActive("reportes");
 }
 
-
-
 // Modal Login / Registro
-usuarioLink?.addEventListener('click', (e) => {
-  e.preventDefault();
-  if (loginModal) loginModal.style.display = 'flex';
-});
-
 closeBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     if (loginModal) loginModal.style.display = 'none';
@@ -280,9 +253,8 @@ document.querySelectorAll('.card button').forEach((btn) => {
     const card = btn.closest('.card');
     const nombre = card.querySelector('h3').textContent;
     const precio = parseInt(card.querySelector('p').textContent.replace('$','').replace('.',''));
-    const imagen = card.querySelector('img').getAttribute('src'); // << IMPORTANTE
+    const imagen = card.querySelector('img').getAttribute('src');
 
-    // Buscar si ya está en carrito
     const item = carrito.find(p => p.nombre === nombre);
     if(item){
       item.cantidad++;
@@ -336,7 +308,6 @@ function cargarCarrito() {
 
 // Redirigir a la página de pedido
 document.getElementById('verPedidoBtn').addEventListener('click', () => {
-  // Guardamos carrito en localStorage
   localStorage.setItem('carrito', JSON.stringify(carrito));
   window.location.href = "pedido.html"; 
 });
@@ -362,7 +333,6 @@ if (confirmarBtn) {
       return;
     }
 
-    // Guardar boleta en localStorage
     const boleta = {
       fecha: new Date().toLocaleString(),
       items: carrito,
@@ -370,11 +340,9 @@ if (confirmarBtn) {
     };
     localStorage.setItem("boleta", JSON.stringify(boleta));
 
-    // Mostrar popup
     const popup = document.getElementById("pedidoPopup");
     popup.classList.remove("is-hidden");
 
-    // Después de 1.5s ocultar popup y mostrar boleta
     setTimeout(() => {
       popup.classList.add("is-hidden");
       showBoleta();
@@ -397,12 +365,8 @@ if (cancelarPago) {
 const confirmarPedidoBtn = document.getElementById("confirmarPedidoBtn");
 if (confirmarPedidoBtn) {
   confirmarPedidoBtn.addEventListener("click", () => {
-    // Ocultar la vista de pedido
     document.getElementById("pedido").classList.add("is-hidden");
-    // Mostrar la vista de pago
     document.getElementById("pago").classList.remove("is-hidden");
-
-    // Opcional: resetear scroll para que el usuario vea el formulario desde arriba
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 }
@@ -430,8 +394,6 @@ function renderBoleta() {
   document.getElementById("boletaTotal").textContent = `$${boleta.total.toLocaleString()}`;
 }
 
-
-
 document.addEventListener("DOMContentLoaded", () => {
   renderNavbar();
   if (document.getElementById("boleta")) {
@@ -448,16 +410,9 @@ if (volverInicio) {
 
 // Mostrar la boleta
 function showBoleta() {
-  // Ocultar todas las vistas
   document.querySelectorAll(".view").forEach(v => v.classList.add("is-hidden"));
-
-  // Mostrar la vista boleta
   document.getElementById("boleta").classList.remove("is-hidden");
-
-  // Renderizar contenido
   renderBoleta();
-
-  // Actualizar navegación activa (si usas subrayado de navbar)
   setActive("boleta");
 }
 
@@ -469,8 +424,6 @@ if (window.location.hash === "#boleta") {
 // Reportes (Admin)
 function renderReportes() {
   const boletaHistorial = JSON.parse(localStorage.getItem("boletaHistorial")) || [];
-
-  // Calcular total de ventas
   let totalVentas = 0;
   let cantidadPedidos = boletaHistorial.length;
   let productoPopular = "-";
@@ -478,21 +431,17 @@ function renderReportes() {
 
   boletaHistorial.forEach(b => {
     totalVentas += b.total;
-
     b.items.forEach(item => {
-      // Usa 'nombre' y 'cantidad' si así se llaman en tu sistema
       const nombre = item.nombre || item.name;
       const cantidad = item.cantidad || item.quantity;
       contadorProductos[nombre] = (contadorProductos[nombre] || 0) + cantidad;
     });
   });
 
-  // Producto más vendido
   if (Object.keys(contadorProductos).length > 0) {
     productoPopular = Object.entries(contadorProductos).sort((a, b) => b[1] - a[1])[0][0];
   }
 
-  // Pintar en HTML
   document.getElementById("reporteTotalVentas").textContent = `$${totalVentas.toLocaleString()}`;
   document.getElementById("reporteCantidadPedidos").textContent = cantidadPedidos;
   document.getElementById("reporteProductoPopular").textContent = productoPopular;

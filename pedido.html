@@ -4,19 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tu Pedido | La Terraza</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Fuente única: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css?v=10">
+  <style>
+    body, html {
+      font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    .logo {
+      font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+  </style>
 </head>
 <body>
-  <!-- Navbar (misma estructura que index) -->
+  <!-- Navbar -->
   <header class="navbar">
     <a href="index.html" class="logo" aria-label="Ir al inicio">LA TERRAZA</a>
-    <nav class="nav">
-      <a href="index.html#menu" class="nav__link">Menú</a>
-      <a href="index.html#nosotros" class="nav__link">Nosotros</a>
-      <a href="pedido.html" class="nav__link is-active">Pedido (<span id="contadorCarrito">0</span>)</a>
-      <a href="#" class="nav__link" id="usuarioLink">Usuario</a>
-    </nav>
+    <nav class="nav"></nav>
   </header>
 
   <main class="view view--pedido">
@@ -25,7 +31,7 @@
     <!-- Lista del carrito -->
     <ul id="pedidoList" class="pedido-list"></ul>
 
-    <!-- Vacío -->
+    <!-- Carrito vacío -->
     <p id="pedidoVacio" class="muted" style="display:none;">
       Tu carrito está vacío. <a href="index.html#menu" class="nav__link">Ir al menú</a>
     </p>
@@ -43,6 +49,9 @@
     </div>
   </main>
 
+  <!-- JS principal (navbar, login, carrito, etc.) -->
+  <script src="js/app.js?v=8"></script>
+  <!-- JS específico de pedido -->
   <script src="js/pedido.js?v=1"></script>
 </body>
 </html>

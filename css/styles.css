@@ -3,13 +3,14 @@
 ========================= */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
-body, .view, .nav__link, .btn, input, select, textarea, table, th, td, label, p, ul, li, .footer, .card, .popup, #nosotros, #gestion, #reportes, #boleta, #pedido, #pago {
-  font-family: 'Inter', Arial, sans-serif;
+/* Global: usar Inter en toda la página (heredado desde body/html) */
+html, body {
+  font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 /* Excepción: mantener fuente original en el nombre 'La Terraza' */
 .logo, .logo span, .nombre-terraza, .nombre-terraza * {
-  font-family: 'Pacifico', cursive !important;
+  font-family: 'Playfair Display', serif !important;
 }
 
 /* =========================
@@ -179,8 +180,11 @@ body, .view, .nav__link, .btn, input, select, textarea, table, th, td, label, p,
   --color-brown: #4b2e2e;
   --color-accent: #ffcc80;
 
-  --font-logo: 'Playfair Display', serif; /* logo y navbar */
-  --font-ui: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; /* resto */
+/* Logo también con Inter */
+  .logo, .logo span, .nombre-terraza, .nombre-terraza * {
+  font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+}
+
 
   --nav-gap: 16px; /* espacio superior para bajar navbar */
 }

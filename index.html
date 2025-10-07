@@ -5,34 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>La Terraza</title>
 
-  <!-- Fuentes: Logo con Luxurious Roman, UI con Inter -->
-  <link href="https://fonts.googleapis.com/css2?family=Luxurious+Roman&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Fuente única: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- CSS -->
   <link rel="stylesheet" href="css/styles.css?v=8">
+  <style>
+    /* Forzar Inter en todo el sitio */
+    html, body {
+      font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    /* Logo también con Inter */
+    .logo {
+      font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+  </style>
 </head>
 <body>
   <!-- Navbar -->
   <header class="navbar">
     <a href="#" id="homeLink" class="logo" aria-label="Ir al inicio">LA TERRAZA</a>
-    <nav class="nav">
-      <a href="#" class="nav__link" id="menuLink">Menú</a>
-      <a href="#" class="nav__link" id="nosotrosLink">Nosotros</a>
-      <a href="pedido.html" class="nav__link">
-        Pedido (<span id="contadorCarrito">0</span>)
-      </a>
-      <a href="#" class="nav__link" id="usuarioLink">Usuario</a>
-      <a href="#" class="nav__link" id="reportesLink">Reportes</a>
-    </nav>
+    <nav class="nav"></nav>
   </header>
 
-  <!-- HOME (hero solamente) -->
+  <!-- HOME -->
   <main id="home" class="view view--home">
     <section class="hero">
       <img class="hero__media" src="img/Mediterraneo_Fondo.png" alt="Fondo Mediterráneo">
     </section>
 
-    <!-- Sección Sobre Nosotros (visible al hacer scroll) -->
+    <!-- Sobre Nosotros -->
     <section class="about">
       <div class="about__text">
         <h2>Nuestro Restaurante</h2>
@@ -54,7 +58,6 @@
   <section id="menu" class="view view--menu is-hidden" aria-label="Menú Italiano">
     <h2>Menú La Terraza</h2>
     <div class="menu-grid">
-
       <article class="card">
         <img src="img/agnello.png" alt="Agnello al Forno">
         <h3>Agnello al Forno</h3>
@@ -96,9 +99,9 @@
         <p>$10.200</p>
         <button type="button">Agregar</button>
       </article>
-
     </div>
-    <!-- Barra de pedido (aparece solo si hay productos) -->
+
+    <!-- Barra de pedido -->
     <div id="barraPedido" class="barra-pedido is-hidden">
       <p><strong>Tu pedido:</strong> <span id="totalItems">0</span> productos · Total: $<span id="totalPrecio">0</span></p>
       <button id="verPedidoBtn">Ver pedido</button>
@@ -106,9 +109,7 @@
   </section>
 
   <!-- PEDIDO -->
-  <section id="pedido" class="view view--pedido is-hidden">
-    <!-- Contenido de la sección de pedido -->
-  </section>
+  <section id="pedido" class="view view--pedido is-hidden"></section>
 
   <!-- CONFIRMACIÓN Y PAGO -->
   <section id="pago" class="view view--pago is-hidden">
@@ -153,9 +154,7 @@
             <th>Subtotal</th>
           </tr>
         </thead>
-        <tbody id="boletaItems">
-          <!-- Se llena dinámicamente con JS -->
-        </tbody>
+        <tbody id="boletaItems"></tbody>
         <tfoot>
           <tr>
             <td colspan="3" class="boleta-total-label">TOTAL</td>
@@ -169,7 +168,6 @@
       </div>
     </div>
   </section>
-
 
   <!-- REPORTES (Admin) -->
   <section id="reportes" class="view view--reportes is-hidden" aria-label="Reportes de Administración">
@@ -220,14 +218,12 @@
             <th>Acciones</th>
           </tr>
         </thead>
-        <tbody id="productosTabla">
-          <!-- Se llena dinámicamente -->
-        </tbody>
+        <tbody id="productosTabla"></tbody>
       </table>
     </div>
   </section>
 
-  <!-- MODAL LOGIN (Sprint 2) -->
+  <!-- MODAL LOGIN -->
   <div id="loginModal" class="modal" style="display:none;">
     <div class="modal-content">
       <span class="close">&times;</span>
@@ -241,7 +237,7 @@
     </div>
   </div>
 
-  <!-- MODAL REGISTRO (Sprint 2) -->
+  <!-- MODAL REGISTRO -->
   <div id="registroModal" class="modal" style="display:none;">
     <div class="modal-content">
       <span class="close">&times;</span>
