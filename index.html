@@ -27,7 +27,15 @@
   <!-- Navbar -->
   <header class="navbar">
     <a href="#" id="homeLink" class="logo" aria-label="Ir al inicio">LA TERRAZA</a>
-    <nav class="nav"></nav>
+    <!-- Navbar por defecto (cliente). app.js puede reemplazar este contenido según el rol -->
+    <nav class="nav">
+      <a href="#" class="nav__link" id="menuLink">Menú</a>
+      <a href="#" class="nav__link" id="nosotrosLink">Nosotros</a>
+      <a href="pedido.html" class="nav__link" id="reservasLink">
+        Pedido (<span id="contadorCarrito">0</span>)
+      </a>
+      <a href="#" class="nav__link" id="usuarioLink">Usuario</a>
+    </nav>
   </header>
 
   <!-- HOME -->
@@ -37,7 +45,7 @@
     </section>
 
     <!-- Sobre Nosotros -->
-    <section class="about">
+    <section id="nosotros" class="about">
       <div class="about__text">
         <h2>Nuestro Restaurante</h2>
         <p>
