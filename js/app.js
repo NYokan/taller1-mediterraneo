@@ -1,6 +1,32 @@
-// ==============================
-// Gestión de Productos (Admin)
-// ==============================
+/**********************************************************
+ * La Terraza - app.js (versión completa con mejoras)
+ **********************************************************/
+
+/* =========================
+   Sesión de usuario (localStorage)
+========================= */
+function getUser() {
+  return {
+    email: localStorage.getItem('userEmail') || null,
+    role:  localStorage.getItem('userRole')  || 'visitante',
+  };
+}
+function setUser(email, role) {
+  if (email) localStorage.setItem('userEmail', email);
+  if (role)  localStorage.setItem('userRole', role);
+}
+function clearUser() {
+  localStorage.removeItem('userEmail');
+  localStorage.removeItem('userRole');
+}
+function isLoggedIn() {
+  const u = getUser();
+  return !!u.email && (u.role === 'cliente' || u.role === 'admin');
+}
+
+/* =========================
+   Productos (Admin)
+========================= */
 let productos = JSON.parse(localStorage.getItem("productos")) || [
   { nombre: "Pizza Margarita", precio: 8500, img: "pizz.png" },
   { nombre: "Lasaña Boloñesa", precio: 9200, img: "lasaña.png" }
@@ -16,7 +42,7 @@ function renderProductos() {
     tr.innerHTML = `
       <td><img src="img/${p.img}" alt="${p.nombre}"></td>
       <td>${p.nombre}</td>
-      <td>$${p.precio}</td>
+      <td>$${p.precio.toLocaleString()}</td>
       <td>
         <button class="btn-editar" onclick="editarProducto(${i})">Editar</button>
         <button class="btn-eliminar" onclick="eliminarProducto(${i})">Eliminar</button>
@@ -28,7 +54,6 @@ function renderProductos() {
   localStorage.setItem("productos", JSON.stringify(productos));
 }
 
-// Agregar producto
 const productoForm = document.getElementById("productoForm");
 if (productoForm) {
   productoForm.addEventListener("submit", (e) => {
@@ -44,7 +69,6 @@ if (productoForm) {
   });
 }
 
-// Editar / Eliminar
 function editarProducto(index) {
   const nuevoNombre = prompt("Nuevo nombre:", productos[index].nombre);
   const nuevoPrecio = prompt("Nuevo precio:", productos[index].precio);
@@ -70,50 +94,56 @@ function showGestion() {
   setActive("gestion");
 }
 
-// ==============================
-// Vistas principales
-// ==============================
+/* =========================
+   Vistas principales
+========================= */
 const homeView = document.getElementById('home');
 const menuView = document.getElementById('menu');
+const loginModal    = document.getElementById('loginModal');
+const registroModal = document.getElementById('registroModal');
+const closeBtns     = document.querySelectorAll('.close');
+const goToRegistro  = document.getElementById('goToRegistro');
 
-// Utilidad
-function getNavLinks() {
-  return Array.from(document.querySelectorAll('.nav__link'));
-}
-
-// Credenciales admin
+/* =========================
+   Login / Logout
+========================= */
 const ADMIN_EMAIL = "admin@laterraza.cl";
-const ADMIN_PASS = "123456";
+const ADMIN_PASS  = "123456";
 
-// ==============================
-// Login
-// ==============================
 function login(email, pass) {
   if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
-    localStorage.setItem("userRole", "admin");
+    setUser(email, "admin");
     alert("Has iniciado sesión como ADMINISTRADOR");
   } else {
-    localStorage.setItem("userRole", "cliente");
-    alert("Bienvenido cliente");
+    // Cliente genérico con cualquier correo/clave
+    setUser(email || "cliente@correo.com", "cliente");
+    alert("Has iniciado sesión como CLIENTE");
   }
   renderNavbar();
   showHome();
 }
 
-// ==============================
-// Navbar dinámica
-// ==============================
+function logout() {
+  clearUser();
+  alert("Has cerrado sesión");
+  renderNavbar();
+  showHome();
+}
+
+/* =========================
+   Navbar dinámica
+========================= */
 function renderNavbar() {
   const nav = document.querySelector(".nav");
   if (!nav) return;
-  const role = localStorage.getItem("userRole") || "cliente";
+  const { role, email } = getUser();
 
-  // Base (cliente) con contador
+  // Base (siempre visibles)
   nav.innerHTML = `
     <a href="#" class="nav__link" id="menuLink">Menú</a>
     <a href="#" class="nav__link" id="nosotrosLink">Nosotros</a>
     <a href="#" class="nav__link" id="reservasLink">Pedido (<span id="contadorCarrito">0</span>)</a>
-    <a href="#" class="nav__link" id="usuarioLink">Usuario</a>
+    <a href="#" class="nav__link" id="usuarioLink">${isLoggedIn() ? (email || "Cuenta") : "Usuario"}</a>
   `;
 
   // Admin extra
@@ -124,43 +154,46 @@ function renderNavbar() {
     `;
   }
 
+  // Crear/actualizar panel de usuario
+  ensureUserPanel();
+  updateUserPanel(email, role);
+
   setNavListeners();
 }
 
-// ==============================
-// Listeners Navbar
-// ==============================
+/* =========================
+   Listeners Navbar
+========================= */
+function getNavLinks() {
+  return Array.from(document.querySelectorAll('.nav__link'));
+}
+
 function setNavListeners() {
-  // Limpia duplicados
+  // Evitar duplicados
   getNavLinks().forEach(link => {
     const newLink = link.cloneNode(true);
     link.parentNode.replaceChild(newLink, link);
   });
 
-  const menuLink = document.getElementById("menuLink");
-  if (menuLink) menuLink.addEventListener("click", (e) => { e.preventDefault(); showMenu(); });
+  document.getElementById("menuLink")?.addEventListener("click", (e) => { e.preventDefault(); showMenu(); });
+  document.getElementById("nosotrosLink")?.addEventListener("click", (e) => { e.preventDefault(); showNosotros(); });
+  document.getElementById("reservasLink")?.addEventListener("click", (e) => { e.preventDefault(); showPedido(); });
 
-  const nosotrosLink = document.getElementById("nosotrosLink");
-  if (nosotrosLink) nosotrosLink.addEventListener("click", (e) => { e.preventDefault(); showNosotros(); });
-
-  const reservasLink = document.getElementById("reservasLink");
-  if (reservasLink) reservasLink.addEventListener("click", (e) => { e.preventDefault(); showPedido(); });
-
-  // Mostrar Login (abrir modal)
-  const usuarioLink = document.getElementById("usuarioLink");
-  if (usuarioLink) {
-    usuarioLink.addEventListener("click", (e) => {
-      e.preventDefault();
+  // Usuario: si hay sesión, abrir panel; si no, abrir login
+  document.getElementById("usuarioLink")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (isLoggedIn()) {
+      openUserPanel();
+    } else {
       showLogin();
-    });
-  }
+    }
+  });
 
-  // Conectar formulario de login dentro del modal (flexible con tus inputs)
+  // Login form (flexible con tus inputs)
   const loginForm = document.querySelector('#loginModal form') || document.getElementById('loginForm');
   if (loginForm) {
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      // Toma email del input type="email" o del primer input de texto
       const emailInput = loginForm.querySelector('input[type="email"]') ||
                          loginForm.querySelector('input[name="email"]') ||
                          loginForm.querySelector('input[type="text"]');
@@ -173,85 +206,80 @@ function setNavListeners() {
     });
   }
 
-  const reportesLink = document.getElementById("reportesLink");
-  if (reportesLink) reportesLink.addEventListener("click", (e) => { e.preventDefault(); showReportes(); });
+  document.getElementById("reportesLink")?.addEventListener("click", (e) => { e.preventDefault(); showReportes(); });
+  document.getElementById("gestionLink")?.addEventListener("click", (e) => { e.preventDefault(); showGestion(); });
 
-  const gestionLink = document.getElementById("gestionLink");
-  if (gestionLink) gestionLink.addEventListener("click", (e) => { e.preventDefault(); showGestion(); });
+  // User Panel buttons
+  document.getElementById("logoutBtn")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    closeUserPanel();
+    logout();
+  });
+  document.getElementById("switchAccountBtn")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    closeUserPanel();
+    showLogin();
+  });
+
+  // Home logo
+  document.getElementById("homeLink")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    showHome();
+  });
 }
 
-// ==============================
-// Acciones de vistas
-// ==============================
-function setActive(linkId) {
-  getNavLinks().forEach(a => a.classList.remove("is-active"));
-  if (linkId) {
-    const linkEl = document.getElementById(linkId + "Link");
-    if (linkEl) linkEl.classList.add("is-active");
-  }
+/* =========================
+   Panel de Usuario (modal)
+========================= */
+function ensureUserPanel() {
+  if (document.getElementById('userPanelModal')) return;
+
+  const modal = document.createElement('div');
+  modal.id = 'userPanelModal';
+  modal.className = 'modal';
+  modal.style.display = 'none';
+  modal.innerHTML = `
+    <div class="modal-content" style="max-width:420px;text-align:center">
+      <span class="close" id="userPanelClose">&times;</span>
+      <h2>Tu cuenta</h2>
+      <p style="margin:.5rem 0"><strong>Email:</strong> <span id="userEmailLabel">—</span></p>
+      <p style="margin:.5rem 0"><strong>Rol:</strong> <span id="userRoleLabel">visitante</span></p>
+      <div style="display:flex;gap:.5rem;justify-content:center;margin-top:1rem">
+        <button id="switchAccountBtn" class="btn-confirmar" style="padding:.6rem 1rem">Iniciar con otro usuario</button>
+        <button id="logoutBtn" class="btn-cancelar" style="padding:.6rem 1rem">Cerrar sesión</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  document.getElementById('userPanelClose')?.addEventListener('click', closeUserPanel);
+  window.addEventListener('click', (e) => {
+    if (e.target === modal) closeUserPanel();
+  });
+}
+function updateUserPanel(email, role) {
+  const emailEl = document.getElementById('userEmailLabel');
+  const roleEl  = document.getElementById('userRoleLabel');
+  if (emailEl) emailEl.textContent = email || '—';
+  if (roleEl)  roleEl.textContent  = role || 'visitante';
+}
+function openUserPanel() {
+  const modal = document.getElementById('userPanelModal');
+  if (modal) modal.style.display = 'flex';
+}
+function closeUserPanel() {
+  const modal = document.getElementById('userPanelModal');
+  if (modal) modal.style.display = 'none';
 }
 
-function showHome() {
-  document.querySelectorAll('.view').forEach(v => v.classList.add('is-hidden'));
-  if (homeView) homeView.classList.remove('is-hidden');
-  setActive(null);
-  localStorage.removeItem('boleta');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function showMenu() {
-  document.querySelectorAll('.view').forEach(v => v.classList.add('is-hidden'));
-  if (menuView) menuView.classList.remove('is-hidden');
-  setActive("menu");
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function showNosotros() {
-  document.querySelectorAll('.view').forEach(v => v.classList.add('is-hidden'));
-  const sec = document.getElementById('nosotros');
-  if (sec) sec.classList.remove('is-hidden');
-  setActive('nosotros');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// NUEVO: comportamiento de Pedido cuando el carrito está vacío
-function showPedido() {
-  document.querySelectorAll('.view').forEach(v => v.classList.add('is-hidden'));
-  const pedido = document.getElementById('pedido');
-  if (pedido) pedido.classList.remove('is-hidden');
-  setActive('reservas');
-
-  const vacio = carrito.length === 0;
-  if (vacio) {
-    const ir = confirm("Tu carrito está vacío. ¿Deseas realizar un pedido? (Ir al Menú)");
-    if (ir) showMenu();
-  } else {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-}
-
-function showReportes() {
-  document.querySelectorAll(".view").forEach(v => v.classList.add("is-hidden"));
-  const r = document.getElementById("reportes");
-  if (r) r.classList.remove("is-hidden");
-  renderReportes();
-  setActive("reportes");
-}
-
-// ==============================
-// Modales
-// ==============================
-const loginModal    = document.getElementById('loginModal');
-const registroModal = document.getElementById('registroModal');
-const closeBtns     = document.querySelectorAll('.close');
-const goToRegistro  = document.getElementById('goToRegistro');
-
+/* =========================
+   Modales login/registro
+========================= */
 function showLogin() {
   document.querySelectorAll('.view').forEach(v => v.classList.add('is-hidden'));
   if (loginModal) loginModal.style.display = 'flex';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
 closeBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     if (loginModal) loginModal.style.display = 'none';
@@ -268,9 +296,72 @@ goToRegistro?.addEventListener('click', (e) => {
   if (registroModal) registroModal.style.display = 'flex';
 });
 
-// ==============================
-// Carrito
-// ==============================
+/* =========================
+   Navegación de vistas
+========================= */
+function setActive(key) {
+  getNavLinks().forEach(a => a.classList.remove("is-active"));
+  if (!key) return;
+  const linkEl = document.getElementById(key + "Link");
+  if (linkEl) linkEl.classList.add("is-active");
+}
+
+function showHome() {
+  document.querySelectorAll('.view').forEach(v => v.classList.add('is-hidden'));
+  if (homeView) homeView.classList.remove('is-hidden');
+  setActive(null);
+  localStorage.removeItem('boleta'); // limpiar boleta temporal
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showMenu() {
+  document.querySelectorAll('.view').forEach(v => v.classList.add('is-hidden'));
+  if (menuView) menuView.classList.remove('is-hidden');
+  setActive("menu");
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showNosotros() {
+  // Aseguramos que HOME (contenedor de #nosotros) esté visible
+  document.querySelectorAll('.view').forEach(v => v.classList.add('is-hidden'));
+  const home = document.getElementById('home');
+  if (home) home.classList.remove('is-hidden');
+
+  const sec = document.getElementById('nosotros');
+  if (sec) {
+    const y = sec.getBoundingClientRect().top + window.pageYOffset - 80; // compensar navbar
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  }
+  setActive('nosotros');
+}
+
+function showPedido() {
+  // Mostrar vista de pedido (SPA)
+  document.querySelectorAll('.view').forEach(v => v.classList.add('is-hidden'));
+  const pedido = document.getElementById('pedido');
+  if (pedido) pedido.classList.remove('is-hidden');
+  setActive('reservas');
+
+  const vacio = (carrito || []).reduce((a, p) => a + p.cantidad, 0) === 0;
+  if (vacio) {
+    const ir = confirm("Tu carrito está vacío. ¿Deseas realizar un pedido? (Ir al Menú)");
+    if (ir) showMenu();
+  } else {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function showReportes() {
+  document.querySelectorAll(".view").forEach(v => v.classList.add("is-hidden"));
+  const r = document.getElementById("reportes");
+  if (r) r.classList.remove("is-hidden");
+  renderReportes();
+  setActive("reportes");
+}
+
+/* =========================
+   Carrito
+========================= */
 let carrito = [];
 
 document.querySelectorAll('.card button').forEach((btn) => {
@@ -279,8 +370,11 @@ document.querySelectorAll('.card button').forEach((btn) => {
     const nombre = card.querySelector('h3').textContent;
     const precio = parseInt(card.querySelector('p').textContent.replace('$','').replace('.',''));
     const imagen = card.querySelector('img').getAttribute('src');
+
     const item = carrito.find(p => p.nombre === nombre);
-    if (item) item.cantidad++; else carrito.push({ nombre, precio, cantidad: 1, imagen });
+    if (item) item.cantidad++;
+    else carrito.push({ nombre, precio, cantidad: 1, imagen });
+
     actualizarBarraPedido();
   });
 });
@@ -316,22 +410,18 @@ function cargarCarrito() {
   actualizarBarraPedido();
 }
 
-// Botón “Ver pedido” (si existe en esta página)
+// Botón “Ver pedido”
 const verPedidoBtn = document.getElementById('verPedidoBtn');
 if (verPedidoBtn) {
   verPedidoBtn.addEventListener('click', () => {
-    // En sitio multipágina: redirigir
-    // window.location.href = "pedido.html";
-    // En SPA: mostrar vista pedido
     showPedido();
   });
 }
 
-// ==============================
-// Pago / Boleta
-// ==============================
+/* =========================
+   Pago / Boleta
+========================= */
 const confirmarBtn = document.querySelector(".btn-confirmar-pedido");
-const pagoView = document.getElementById("pago");
 
 function calcularTotal() {
   return carrito.reduce((acc, item) => acc + item.precio * item.cantidad, 0);
@@ -407,12 +497,12 @@ function showBoleta() {
   document.querySelectorAll(".view").forEach(v => v.classList.add("is-hidden"));
   document.getElementById("boleta")?.classList.remove("is-hidden");
   renderBoleta();
-  setActive(null); // no hay boletaLink en la navbar
+  setActive(null); // sin enlace específico en navbar
 }
 
-// ==============================
-// Reportes
-// ==============================
+/* =========================
+   Reportes
+========================= */
 function renderReportes() {
   const boletaHistorial = JSON.parse(localStorage.getItem("boletaHistorial")) || [];
   let totalVentas = 0;
@@ -437,20 +527,19 @@ function renderReportes() {
   const cantEl  = document.getElementById("reporteCantidadPedidos");
   const popEl   = document.getElementById("reporteProductoPopular");
   if (totalEl) totalEl.textContent = `$${totalVentas.toLocaleString()}`;
-  if (cantEl)  cantEl.textContent = cantidadPedidos;
-  if (popEl)   popEl.textContent = productoPopular;
+  if (cantEl)  cantEl.textContent  = cantidadPedidos;
+  if (popEl)   popEl.textContent   = productoPopular;
 }
 
-// ==============================
-// Init
-// ==============================
+/* =========================
+   Init
+========================= */
 document.addEventListener("DOMContentLoaded", () => {
   renderNavbar();
   cargarCarrito();
   if (document.getElementById("boleta")) renderBoleta();
 
-  // Mostrar menú si la URL tiene #menu
-  if (window.location.hash === '#menu') showMenu();
+  if (window.location.hash === '#menu')   showMenu();
   if (window.location.hash === '#boleta') showBoleta();
 });
 
