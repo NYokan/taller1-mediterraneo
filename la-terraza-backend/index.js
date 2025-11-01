@@ -117,6 +117,28 @@ app.get('/api/v1/reportes/ventas', [autenticar, esAdmin], (req, res) => {
         });
     });
 });
+    // [US-Cliente-01] Obtener el historial de pedidos de un usuario (Protegido)
+    app.get('/api/v1/pedidos/historial', autenticar, (req, res) => {
+        // Obtenemos el ID del usuario desde el token que ya fue verificado
+        const usuario_id = req.usuario.id;
+
+        const sql = `
+            SELECT id, fecha_pedido, total_pedido, nombre_cliente, direccion_envio, metodo_pago 
+            FROM Pedido 
+            WHERE usuario_id = ? 
+            ORDER BY fecha_pedido DESC
+        `;
+
+        db.query(sql, [usuario_id], (err, results) => {
+            if (err) {
+                console.error('Error al consultar historial de pedidos:', err);
+                return res.status(500).json({ error: 'Error interno del servidor' });
+            }
+
+            // Devolvemos la lista de pedidos del usuario
+            res.json(results);
+        });
+    });
 // --- ENDPOINTS DE PEDIDOS (CLIENTE) ---
 
 // [US-Ped-01] Crear un nuevo pedido (Protegido por Clientes/Admin)
