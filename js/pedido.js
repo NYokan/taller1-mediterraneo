@@ -97,24 +97,12 @@ document.getElementById('btnVaciar')?.addEventListener('click', () => {
 });
 
 // Confirmar (mock)
+// Confirmar (Redirige al formulario de pago en la SPA)
 document.getElementById('btnConfirmar')?.addEventListener('click', () => {
   if (!carrito.length) return alert('Tu carrito está vacío.');
-
-  // Guardar boleta en localStorage
-  const boleta = {
-    fecha: new Date().toLocaleString(),
-    items: carrito,
-    total: carrito.reduce((acc, it) => acc + it.cantidad * it.precio, 0)
-  };
-  localStorage.setItem('boleta', JSON.stringify(boleta));
-
-  // Vaciar carrito
-  carrito = [];
-  guardar();
-  render();
-
-  // Redirigir a index.html y mostrar la boleta
-  window.location.href = "index.html#boleta";
+  
+  // Redirige a la vista de pago en la página principal
+  window.location.href = "index.html#pago";
 });
 
 // Init

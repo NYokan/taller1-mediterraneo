@@ -466,44 +466,412 @@ function cargarCarrito() {
 // ... [LÓGICA RESTANTE (ADMIN, PEDIDO, PAGO, BOLETA) SE MANTIENEN POR AHORA] ...
 
 /* =========================
-   Productos (Admin) -> Se mantiene por ahora
+   Productos (Admin) -> (Integrado con API)
 ========================= */
-// Mantener esta función vacía o con la lógica mínima para que no falle.
-function renderProductos() {
+
+// [US-Int-05] REEMPLAZO COMPLETO de renderProductos para que use la API
+async function renderProductos() {
   const tbody = document.getElementById("productosTabla");
   if (!tbody) return;
-  
-  const productosAdmin = JSON.parse(localStorage.getItem("productos")) || [];
-  
-  tbody.innerHTML = "";
-  productosAdmin.forEach((p, i) => {
-    // Lógica de renderizado de la tabla de admin
-  });
 
-  localStorage.setItem("productos", JSON.stringify(productosAdmin));
+  // Mostramos un 'cargando...'
+  tbody.innerHTML = `<tr><td colspan="4">Cargando productos...</td></tr>`;
+
+  try {
+    // 1. Obtener los productos (igual que en el menú)
+    // No necesitamos token aquí porque GET /productos es público
+    const response = await fetch(`${API_URL}/productos`);
+    if (!response.ok) {
+      throw new Error(`Error ${response.status}: ${response.statusText}`);
+    }
+    const productos = await response.json();
+
+    // 2. Limpiar la tabla y renderizar las filas
+    tbody.innerHTML = "";
+    
+    if (productos.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4">No hay productos en la base de datos.</td></tr>`;
+        return;
+    }
+
+    productos.forEach(p => {
+      const tr = document.createElement("tr");
+      // Usamos los nombres de columna de la BD (ej. imagen_url, nombre_plato)
+      tr.innerHTML = `
+        <td><img src="${p.imagen_url}" alt="${p.nombre_plato}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;"></td>
+        <td>${p.nombre_plato}</td>
+        <td>$${p.precio.toLocaleString()}</td>
+        <td>
+          <button class="btn-editar" data-id="${p.id}">Editar</button>
+          <button class="btn-eliminar" data-id="${p.id}">Eliminar</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+  } catch (error) {
+    console.error("Error al renderizar productos de admin:", error);
+    tbody.innerHTML = `<tr><td colspan="4" style="color: red;">Error al cargar productos: ${error.message}</td></tr>`;
+  }
 }
+
+// ... (El resto de tus funciones de admin como 'productoForm', 'editarProducto', etc.
+// permanecen debajo de esta función por ahora)
+// [US-Int-05] Integración del formulario de 'Agregar Producto'
 const productoForm = document.getElementById("productoForm");
 if (productoForm) {
-  // ... lógica del formulario de admin
+  productoForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const nombre = document.getElementById("nombreProducto").value.trim();
+    const precio = parseInt(document.getElementById("precioProducto").value);
+    // Tu formulario original pide 'imgProducto', así que usamos ese ID
+    const img = document.getElementById("imgProducto").value.trim(); 
+    
+    if (!nombre || Number.isNaN(precio) || !img) {
+      alert("Por favor, completa todos los campos.");
+      return;
+    }
+
+    const { token } = getUser(); // Obtenemos el token del admin
+    if (!token) {
+      alert("Error de autenticación. Por favor, inicia sesión de nuevo.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/productos`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // Enviamos el token
+        },
+        body: JSON.stringify({
+          nombre_plato: nombre,
+          precio: precio,
+          imagen_url: "img/" + img, // Asumimos que la ruta es "img/pizza.png"
+          descripcion: "Descripción por defecto" 
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Error al crear el producto');
+      }
+
+      alert(data.mensaje); // "Producto creado"
+      productoForm.reset();
+      renderProductos(); // Volvemos a cargar la tabla (ahora con el nuevo producto)
+
+    } catch (error) {
+      console.error("Error al agregar producto:", error);
+      alert(`Error: ${error.message}`);
+    }
+  });
 }
 
-function editarProducto(index) { /* ... */ }
-function eliminarProducto(index) { /* ... */ }
+// [US-Int-05] Agregamos un listener de eventos a la tabla de productos
+// para manejar los clics de 'Editar' y 'Eliminar'
+document.getElementById('productosTabla')?.addEventListener('click', (e) => {
+  const btnEliminar = e.target.closest('.btn-eliminar');
+  const btnEditar = e.target.closest('.btn-editar');
+
+  if (btnEliminar) {
+    const id = btnEliminar.dataset.id;
+    eliminarProducto(id); // Llamamos a la nueva función
+  } else if (btnEditar) {
+    const id = btnEditar.dataset.id;
+    // La lógica de editar es más compleja (requiere un modal), 
+    // así que la dejamos pendiente por ahora.
+    alert(`Función 'Editar' para ID ${id} aún no implementada en el frontend.`);
+  }
+});
+
+// [US-Int-05] Integración de 'Eliminar Producto' (reemplaza la función antigua)
+async function eliminarProducto(id) {
+  if (!confirm("¿Estás seguro de que quieres eliminar este producto?")) {
+    return;
+  }
+
+  const { token } = getUser();
+  if (!token) {
+    alert("Error de autenticación. Por favor, inicia sesión de nuevo.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/productos/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}` // Enviamos el token
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Error al eliminar el producto');
+    }
+
+    alert(data.mensaje); // "Producto eliminado"
+    renderProductos(); // Volvemos a cargar la tabla (sin el producto eliminado)
+
+  } catch (error) {
+    console.error("Error al eliminar producto:", error);
+    alert(`Error: ${error.message}`);
+  }
+}
+
+// La función 'editarProducto(index)' antigua ya no es necesaria, 
+// puedes borrarla o dejarla comentada.
+function editarProducto(index) { 
+  alert("Esta función (editarProducto) ya no se usa y debe ser reemplazada.");
+}
 // ... [FIN LÓGICA DE ADMIN] ...
 
 // ... [LÓGICA DE NAVEGACIÓN Y CARRITO] ...
-function ensurePedidoDOM() { /* ... */ }
-function renderPedido() { /* ... */ }
-function showPedido() { /* ... */ renderPedido(); /* ... */ }
 
-function calcularTotal() { /* ... */ }
+function ensurePedidoDOM() {
+  const pedido = document.getElementById('pedido');
+  if (!pedido) return;
+
+  // Si la vista está vacía, creamos el contenido base
+  if (!pedido.dataset.built) {
+    pedido.innerHTML = `
+      <h2>Tu Pedido</h2>
+      <ul id="pedidoList" class="pedido-list"></ul>
+      <p id="pedidoVacio" class="muted" style="display:none;">
+        Tu carrito está vacío. <a href="#" id="irMenuDesdeVacio" class="nav__link">Ir al menú</a>
+      </p>
+      <div id="pedidoResumen" class="pedido-resumen" style="display:none;">
+        <div>
+          <strong>Productos:</strong> <span id="resumenItems">0</span> ·
+          <strong>Total:</strong> $<span id="resumenTotal">0</span>
+        </div>
+        <div class="acciones">
+          <button id="btnVaciar">Vaciar carrito</button>
+          <button id="btnConfirmar">Confirmar pedido</button>
+        </div>
+      </div>
+    `;
+    pedido.dataset.built = "1";
+
+    // Listeners locales de la vista pedido
+    document.getElementById('irMenuDesdeVacio')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      showMenu();
+    });
+    document.getElementById('btnVaciar')?.addEventListener('click', () => {
+      if (carrito.length === 0) return;
+      if (confirm('¿Vaciar carrito?')) {
+        carrito = [];
+        actualizarBarraPedido();
+        renderPedido();
+      }
+    });
+
+    // [US-Int-03] MODIFICADO: El botón 'Confirmar' ahora te lleva a la vista de pago
+    document.getElementById('btnConfirmar')?.addEventListener('click', () => {
+      if (carrito.length === 0) {
+        alert('Tu carrito está vacío');
+        return;
+      }
+      // Pasar a vista pago (en lugar de la lógica antigua de boleta)
+      document.getElementById('pedido')?.classList.add('is-hidden');
+      document.getElementById('pago')?.classList.remove('is-hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+}
+
+function renderPedido() {
+  ensurePedidoDOM();
+
+  const list = document.getElementById('pedidoList');
+  const vacio = document.getElementById('pedidoVacio');
+  const resumen = document.getElementById('pedidoResumen');
+  const resumenItems = document.getElementById('resumenItems');
+  const resumenTotal = document.getElementById('resumenTotal');
+  if (!list || !vacio || !resumen || !resumenItems || !resumenTotal) return;
+
+  list.innerHTML = "";
+  if (carrito.length === 0) {
+    vacio.style.display = 'block';
+    resumen.style.display = 'none';
+    return;
+  }
+
+  vacio.style.display = 'none';
+  resumen.style.display = 'flex';
+
+  // Usamos 'item.id' como índice único (data-id) en lugar de 'idx'
+  carrito.forEach((item) => {
+    const li = document.createElement('li');
+    li.className = 'pedido-item';
+    li.innerHTML = `
+      <div class="pi-info">
+        <img class="pi-thumb" src="${item.imagen}" alt="${item.nombre}">
+        <div>
+          <h4>${item.nombre}</h4>
+          <small>$${item.precio.toLocaleString()} c/u</small>
+        </div>
+      </div>
+      <div class="pi-actions">
+        <button class="menos" data-id="${item.id}">−</button>
+        <span>${item.cantidad}</span>
+        <button class="mas" data-id="${item.id}">+</button>
+        <span class="pi-total">$${(item.precio * item.cantidad).toLocaleString()}</span>
+        <button class="eliminar" data-id="${item.id}">Eliminar</button>
+      </div>
+    `;
+    list.appendChild(li);
+  });
+
+  // Totales
+  const totalItems = carrito.reduce((a, p) => a + p.cantidad, 0);
+  const totalPrecio = carrito.reduce((a, p) => a + p.precio * p.cantidad, 0);
+  resumenItems.textContent = totalItems;
+  resumenTotal.textContent = totalPrecio.toLocaleString();
+
+  // Listeners de cada ítem (ahora usan data-id)
+  list.querySelectorAll('.menos').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const item = carrito.find(p => p.id === id);
+      if (!item) return;
+
+      item.cantidad = Math.max(0, item.cantidad - 1);
+      if (item.cantidad === 0) {
+        carrito = carrito.filter(p => p.id !== id);
+      }
+      actualizarBarraPedido();
+      renderPedido();
+    });
+  });
+  list.querySelectorAll('.mas').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const item = carrito.find(p => p.id === id);
+      if (item) {
+         item.cantidad += 1;
+         actualizarBarraPedido();
+         renderPedido();
+      }
+    });
+  });
+  list.querySelectorAll('.eliminar').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      carrito = carrito.filter(p => p.id !== id);
+      actualizarBarraPedido();
+      renderPedido();
+    });
+  });
+}
+
+function showPedido() {
+  document.querySelectorAll('.view').forEach(v => v.classList.add('is-hidden'));
+  const pedido = document.getElementById('pedido');
+  if (pedido) pedido.classList.remove('is-hidden');
+  setActive('reservas');
+
+  renderPedido(); // ← dibujar la vista con el estado actual del carrito
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function calcularTotal() {
+  return carrito.reduce((acc, item) => acc + item.precio * item.cantidad, 0);
+}
 const confirmarBtn = document.querySelector(".btn-confirmar-pedido");
-// ... [LÓGICA DE PAGO/BOLETA] ...
+/* === [US-Int-03] Submit del formulario de pago (Integrado con API) === */
 const pagoForm = document.getElementById("pagoForm");
-if (pagoForm) { /* ... */ }
+if (pagoForm) {
+  pagoForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-function renderBoleta() { /* ... */ }
-function showBoleta() { /* ... */ renderBoleta(); /* ... */ }
+    // 1. Validar campos del formulario
+    const nombre    = document.getElementById("nombre")?.value.trim();
+    const direccion = document.getElementById("direccion")?.value.trim();
+    const metodo    = document.getElementById("metodo")?.value;
+
+    if (!nombre || !direccion || !metodo) {
+      alert("Por favor, completa todos los campos.");
+      return;
+    }
+
+    // 2. Validar carrito y autenticación
+    if (!carrito || carrito.length === 0) {
+      alert("Tu carrito está vacío.");
+      return;
+    }
+    
+    const { token } = getUser();
+    if (!isLoggedIn() || !token) {
+        alert("Debes iniciar sesión para confirmar un pedido.");
+        showLogin();
+        return;
+    }
+
+    // 3. Preparar el JSON para la API (como en el Doc de API)
+    const total = carrito.reduce((acc, i) => acc + (i.precio * i.cantidad), 0);
+    
+    // Mapeamos el carrito a los IDs de producto que espera el backend
+    const itemsParaAPI = carrito.map(item => ({
+        producto_id: item.id, // Usamos el ID de la BD
+        cantidad: item.cantidad,
+        precio_unitario: item.precio
+    }));
+
+    const datosPedido = {
+        info_cliente: {
+            nombre: nombre,
+            direccion: direccion,
+            metodo_pago: metodo
+        },
+        items: itemsParaAPI,
+        total_pedido: total
+    };
+
+    try {
+      // 4. Llamar a la API
+      const response = await fetch(`${API_URL}/pedidos`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}` // ¡Enviamos el token de cliente!
+          },
+          body: JSON.stringify(datosPedido)
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+          throw new Error(data.error || 'Error al crear el pedido');
+      }
+
+      // 5. ¡Éxito! Limpiar y mostrar boleta
+      alert(data.mensaje); // "Pedido creado exitosamente"
+
+      // Guardamos la boleta RECIBIDA de la API (no la que creamos)
+      // El backend ahora nos devuelve la boleta real con el ID
+      localStorage.setItem("boleta", JSON.stringify(data.boleta));
+      
+      // Limpiamos el carrito
+      carrito = [];
+      guardarCarrito(); // Esto limpia el localStorage del carrito
+      
+      // Limpiamos el formulario
+      pagoForm.reset();
+
+      // Mostramos la vista de boleta
+      document.getElementById("pago")?.classList.add("is-hidden");
+      showBoleta(); // Esta función ahora leerá la boleta de la API
+
+    } catch (error) {
+        console.error("Error al confirmar pedido:", error);
+        alert(`Error: ${error.message}`);
+    }
+  });
+}
 
 // [US-Int-05] Integración de 'Reportes' (Admin)
 async function renderReportes() {
