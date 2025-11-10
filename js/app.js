@@ -336,7 +336,9 @@ function showReportes() {
     document.querySelectorAll(".view").forEach(v => v.classList.add("is-hidden"));
     const g = document.getElementById("reportes");
     if (g) g.classList.remove("is-hidden");
-    // renderReportes(); // <-- Esta la integraremos después
+    
+    renderReportes(); // <-- Asegúrate de que esta línea esté aquí y descomentada
+    
     setActive("reportes");
 }
 
@@ -344,14 +346,11 @@ function showGestion() {
   document.querySelectorAll(".view").forEach(v => v.classList.add("is-hidden"));
   const g = document.getElementById("gestion");
   if (g) g.classList.remove("is-hidden");
-  // renderProductos(); // <-- Esta la integraremos después
+  
+  renderProductos();
+  
   setActive("gestion");
 }
-// --- FIN DE LA CORRECCIÓN ---
-
-// ... [FIN LÓGICA DE RENDERIZADO DE NAVBAR, LISTENERS Y PANELES] ...
-
-
 /* =========================
    INTEGRACIÓN 1: Cargar Menú desde la API
 ========================= */
@@ -506,7 +505,50 @@ if (pagoForm) { /* ... */ }
 function renderBoleta() { /* ... */ }
 function showBoleta() { /* ... */ renderBoleta(); /* ... */ }
 
-function renderReportes() { /* ... */ }
+// [US-Int-05] Integración de 'Reportes' (Admin)
+async function renderReportes() {
+    const totalEl = document.getElementById("reporteTotalVentas");
+    const cantEl  = document.getElementById("reporteCantidadPedidos");
+    const popEl   = document.getElementById("reporteProductoPopular");
+
+    if (!totalEl || !cantEl || !popEl) return;
+
+    // Mostramos 'cargando...'
+    totalEl.textContent = "...";
+    cantEl.textContent = "...";
+    popEl.textContent = "...";
+
+    const { token } = getUser();
+    if (!token) {
+        alert("Error de autenticación. Por favor, inicia sesión de nuevo.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/reportes/ventas`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || 'Error al cargar reportes');
+        }
+
+        // Cargar los datos de la API en el HTML
+        totalEl.textContent = `$${data.total_ventas.toLocaleString()}`;
+        cantEl.textContent  = data.cantidad_pedidos;
+        popEl.textContent   = data.producto_popular;
+
+    } catch (error) {
+        console.error("Error al cargar reportes:", error);
+        alert(`Error: ${error.message}`);
+        totalEl.textContent = "Error";
+        cantEl.textContent = "Error";
+        popEl.textContent = "Error";
+    }
+}
 // ... [FIN LÓGICA DE NAVEGACIÓN Y CARRITO] ...
 
 
