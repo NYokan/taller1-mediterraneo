@@ -793,14 +793,9 @@ function editarProducto(index) {
 function calcularTotal() {
   return carrito.reduce((acc, item) => acc + item.precio * item.cantidad, 0);
 }
-const confirmarBtn = document.querySelector(".btn-confirmar-pedido");
-/* === [US-Int-03] Submit del formulario de pago (Integrado con API) === */
-const pagoForm = document.getElementById("pagoForm");
-if (pagoForm) {
-  pagoForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
 
-    // 1. Validar campos del formulario
+// === [US-Int-03] Procesar pedido y redirigir a boleta ===
+async function procesarPedido() {
     const nombre    = document.getElementById("nombre")?.value.trim();
     const direccion = document.getElementById("direccion")?.value.trim();
     const metodo    = document.getElementById("metodo")?.value;
@@ -810,24 +805,20 @@ if (pagoForm) {
       return;
     }
 
-    // 2. Validar carrito y autenticación
     if (!carrito || carrito.length === 0) {
       alert("Tu carrito está vacío.");
       return;
     }
     
     const { token } = getUser();
-    console.log("Token enviado:", token); // DEBUG: ver qué token se envía
-    
     if (!isLoggedIn() || !token) {
         alert("Debes iniciar sesión para confirmar un pedido.");
         showLogin();
         return;
     }
 
-    // 3. Preparar el JSON para la API
+    // Preparar items para la API
     const total = carrito.reduce((acc, i) => acc + (i.precio * i.cantidad), 0);
-    
     const itemsParaAPI = carrito.map(item => ({
         producto_id: item.id,
         cantidad: item.cantidad,
@@ -844,108 +835,72 @@ if (pagoForm) {
         total_pedido: total
     };
 
-    console.log("Datos enviados:", datosPedido); // DEBUG: ver estructura
-
     try {
-      // 4. Llamar a la API
+      // 1. Enviamos el pedido al backend
       const response = await fetch(`${API_URL}/pedidos`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}` // ← Token aquí
+              'Authorization': `Bearer ${token}`
           },
           body: JSON.stringify(datosPedido)
       });
 
       const data = await response.json();
-      console.log("Respuesta API:", data, "Status:", response.status); // DEBUG
+      console.log("Respuesta API:", data, "Status:", response.status);
       
       if (!response.ok) {
           throw new Error(data.error || 'Error al crear el pedido');
       }
 
-      // 5. ¡Éxito! Limpiar y mostrar boleta
-      alert(data.mensaje);
-
-      const boletaToStore = data.boleta ?? data.pedido ?? data;
-      localStorage.setItem("boleta", JSON.stringify(boletaToStore));
+      // 2. Si el backend crea el pedido, nos da un ID
+      alert(data.mensaje || "¡Pedido creado exitosamente!");
       
+      // 3. Limpiamos el carrito
       carrito = [];
       guardarCarrito();
-      pagoForm.reset();
 
-      document.getElementById("pago")?.classList.add("is-hidden");
-      showBoleta();
+      // 4. Redirigimos a la página de boleta CON EL ID
+      const pedidoId = data.pedido?.id || data.id || data.pedidoId;
+      if (pedidoId) {
+          window.location.href = `pedido.html?id=${pedidoId}`;
+      } else {
+          console.error("No se recibió ID del pedido:", data);
+          alert("Error: El servidor no devolvió un ID de pedido.");
+      }
 
     } catch (error) {
         console.error("Error al confirmar pedido:", error);
         alert(`Error: ${error.message}`);
     }
+}
+
+// Listener del formulario de pago (llama a procesarPedido)
+const pagoForm = document.getElementById("pagoForm");
+if (pagoForm) {
+  pagoForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    procesarPedido();
   });
 }
 
-// [US-Int-05] Integración de 'Reportes' (Admin)
-async function renderReportes() {
-    const totalEl = document.getElementById("reporteTotalVentas");
-    const cantEl  = document.getElementById("reporteCantidadPedidos");
-    const popEl   = document.getElementById("reporteProductoPopular");
-
-    if (!totalEl || !cantEl || !popEl) return;
-
-    // Mostramos 'cargando...'
-    totalEl.textContent = "...";
-    cantEl.textContent = "...";
-    popEl.textContent = "...";
-
-    const { token } = getUser();
-    if (!token) {
-        alert("Error de autenticación. Por favor, inicia sesión de nuevo.");
-        return;
-    }
-
-    try {
-        const response = await fetch(`${API_URL}/reportes/ventas`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        const data = await response.json();
-        if (!response.ok) {
-            throw new Error(data.error || 'Error al cargar reportes');
-        }
-
-        // Cargar los datos de la API en el HTML
-        totalEl.textContent = `$${data.total_ventas.toLocaleString()}`;
-        cantEl.textContent  = data.cantidad_pedidos;
-        popEl.textContent   = data.producto_popular;
-
-    } catch (error) {
-        console.error("Error al cargar reportes:", error);
-        alert(`Error: ${error.message}`);
-        totalEl.textContent = "Error";
-        cantEl.textContent = "Error";
-        popEl.textContent = "Error";
-    }
-}
-// [US-Int-03] Actualización de renderBoleta para leer el formato de la API
+// [US-Int-03] Mostrar la vista de boleta
 function showBoleta() {
-  // Mostrar la vista de boleta y renderizar su contenido
   document.querySelectorAll('.view').forEach(v => v.classList.add('is-hidden'));
   const b = document.getElementById('boleta');
   if (b) b.classList.remove('is-hidden');
   setActive(null);
-  renderBoleta();
+  renderBoleta(); // Renderizar desde window.boletaActual
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// [US-Int-03] Actualización de renderBoleta para leer el formato de la API
+// [US-Int-03] Renderizar boleta desde la variable global (NO desde localStorage)
 function renderBoleta() {
-  // Leemos la boleta que guardamos en localStorage DESPUÉS de la llamada a la API
-  const boleta = JSON.parse(localStorage.getItem('boleta'));
+  // Leemos la boleta desde la variable global (guardada por pagoForm)
+  const boleta = window.boletaActual;
   
   if (!boleta || !boleta.items) {
-      console.error("No se encontró una boleta válida en localStorage.");
+      console.error("No se encontró una boleta válida. Datos disponibles:", boleta);
       return;
   }
 

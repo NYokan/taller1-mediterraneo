@@ -1,108 +1,112 @@
-// Utilidad para CLP
-const CLP = n => (n || 0).toLocaleString('es-CL');
+/**
+ * Lógica para la página pedido.html
+ * Lee el ID del pedido desde la URL y obtiene los datos de la boleta desde la API
+ */
 
-// Cargar carrito
-let carrito = [];
-try { carrito = JSON.parse(localStorage.getItem('carrito')) || []; } catch { carrito = []; }
+const API_URL = 'http://localhost:4000/api/v1'; // Asegúrate de que sea el mismo que en app.js
 
-const lista = document.getElementById('pedidoList');
-const vacio = document.getElementById('pedidoVacio');
-const resumen = document.getElementById('pedidoResumen');
-const resumenItems = document.getElementById('resumenItems');
-const resumenTotal = document.getElementById('resumenTotal');
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Obtener el ID del pedido desde la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const pedidoId = urlParams.get('id');
 
-function guardar() {
-  localStorage.setItem('carrito', JSON.stringify(carrito));
-}
+    if (!pedidoId) {
+        // Si no hay ID, mostrar un error
+        const tbody = document.getElementById('boletaItems');
+        if (tbody) {
+            tbody.innerHTML = '<tr><td colspan="4" style="color: red;">Error: No se ha especificado un número de pedido.</td></tr>';
+        }
+        document.getElementById('boletaTotal').textContent = '$0';
+        return;
+    }
 
-function totales() {
-  const items = carrito.reduce((acc, it) => acc + it.cantidad, 0);
-  const total = carrito.reduce((acc, it) => acc + it.cantidad * it.precio, 0);
-  resumenItems.textContent = items;
-  resumenTotal.textContent = CLP(total);
-  // Mostrar/ocultar bloques
-  if (items > 0) {
-    vacio.style.display = 'none';
-    resumen.style.display = 'flex';
-  } else {
-    vacio.style.display = 'block';
-    resumen.style.display = 'none';
-  }
-}
-
-function render() {
-  if (!lista) return;
-  if (!carrito.length) {
-    lista.innerHTML = '';
-    totales();
-    return;
-  }
-
-  lista.innerHTML = carrito.map(it => `
-    <li class="pedido-item" data-nombre="${it.nombre}">
-      <div class="pi-info">
-        <img src="${it.imagen}" alt="${it.nombre}" class="pi-thumb">
-        <div>
-          <h4>${it.nombre}</h4>
-          <small>$${CLP(it.precio)} c/u</small>
-        </div>
-      </div>
-      <div class="pi-actions">
-        <button class="menos" aria-label="Disminuir">−</button>
-        <span class="cantidad">${it.cantidad}</span>
-        <button class="mas" aria-label="Aumentar">+</button>
-        <span class="pi-total">$${CLP(it.cantidad * it.precio)}</span>
-        <button class="eliminar" aria-label="Eliminar">Eliminar</button>
-      </div>
-    </li>
-  `).join('');
-
-  totales();
-
-  // Actualizar contador en navbar
-  const totalItems = carrito.reduce((acc, p) => acc + p.cantidad, 0);
-  const contador = document.getElementById('contadorCarrito');
-  if (contador) contador.textContent = totalItems;
-}
-
-// Delegación de eventos para + / − / eliminar
-lista?.addEventListener('click', (e) => {
-  const btn = e.target;
-  const li = btn.closest('.pedido-item');
-  if (!li) return;
-  const nombre = li.dataset.nombre;
-  const idx = carrito.findIndex(p => p.nombre === nombre);
-  if (idx === -1) return;
-
-  if (btn.classList.contains('mas')) {
-    carrito[idx].cantidad++;
-  } else if (btn.classList.contains('menos')) {
-    carrito[idx].cantidad = Math.max(0, carrito[idx].cantidad - 1);
-    if (carrito[idx].cantidad === 0) carrito.splice(idx, 1);
-  } else if (btn.classList.contains('eliminar')) {
-    carrito.splice(idx, 1);
-  }
-
-  guardar();
-  render();
+    // 2. Llamar a la API del backend para obtener los datos de la boleta
+    fetchBoleta(pedidoId);
 });
 
-// Vaciar
-document.getElementById('btnVaciar')?.addEventListener('click', () => {
-  if (confirm('¿Vaciar carrito?')) {
-    carrito = [];
-    guardar();
-    render();
-  }
-});
+async function fetchBoleta(id) {
+    try {
+        // Obtener el token del usuario desde localStorage (si es necesario)
+        const token = localStorage.getItem('token');
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+        
+        // Si el backend requiere token, añádelo
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
 
-// [US-Int-03] Confirmar (Redirige al formulario de pago en la SPA)
-document.getElementById('btnConfirmar')?.addEventListener('click', () => {
-  if (!carrito.length) return alert('Tu carrito está vacío.');
-  
-  // Redirige a la vista de pago en la página principal
-  window.location.href = "index.html#pago";
-});
+        const response = await fetch(`${API_URL}/pedidos/${id}`, { headers });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || errorData.message || 'Error al cargar el pedido.');
+        }
 
-// Init
-render();
+        const pedido = await response.json();
+        console.log("Pedido obtenido desde la API:", pedido);
+        
+        // 3. Si todo sale bien, mostramos la boleta
+        mostrarResumenPedido(pedido);
+
+    } catch (error) {
+        console.error('Error al obtener la boleta:', error);
+        const tbody = document.getElementById('boletaItems');
+        if (tbody) {
+            tbody.innerHTML = `<tr><td colspan="4" style="color: red;">Error: ${error.message}</td></tr>`;
+        }
+        document.getElementById('boletaTotal').textContent = '$0';
+    }
+}
+
+function mostrarResumenPedido(pedido) {
+    const fechaEl = document.getElementById('boletaFecha');
+    const tbody = document.getElementById('boletaItems');
+    const totalEl = document.getElementById('boletaTotal');
+
+    if (!fechaEl || !tbody || !totalEl) {
+        console.error('No se encontraron los elementos de la boleta en el HTML');
+        return;
+    }
+
+    tbody.innerHTML = ''; // Limpiar contenedor
+
+    // Mostrar fecha del pedido
+    const fecha = pedido.fecha_pedido || pedido.fecha || new Date().toISOString();
+    fechaEl.textContent = new Date(fecha).toLocaleString();
+
+    // Validar que existan items
+    if (!pedido.items || pedido.items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4">No hay items en este pedido.</td></tr>';
+        totalEl.textContent = '$0';
+        return;
+    }
+
+    // Renderizar cada item
+    let totalCalculado = 0;
+
+    pedido.items.forEach(item => {
+        const tr = document.createElement('tr');
+        
+        // Mapear campos que puede devolver el backend (flexible)
+        const nombre = item.nombre_plato || item.nombre || 'Producto Desconocido';
+        const cantidad = item.cantidad || 1;
+        const precio = item.precio_unitario || item.precio || 0;
+        const subtotal = item.subtotal || (precio * cantidad);
+
+        tr.innerHTML = `
+            <td>${nombre}</td>
+            <td>${cantidad}</td>
+            <td>$${precio.toLocaleString()}</td>
+            <td>$${subtotal.toLocaleString()}</td>
+        `;
+        tbody.appendChild(tr);
+
+        totalCalculado += subtotal;
+    });
+
+    // Mostrar el total
+    const totalFinal = pedido.total_pedido || pedido.total || totalCalculado;
+    totalEl.textContent = `$${totalFinal.toLocaleString()}`;
+}
