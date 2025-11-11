@@ -245,6 +245,9 @@ function ensureUserPanel() {
       <h2>Tu cuenta</h2>
       <p style="margin:.5rem 0"><strong>Email:</strong> <span id="userEmailLabel">—</span></p>
       <p style="margin:.5rem 0"><strong>Rol:</strong> <span id="userRoleLabel">visitante</span></p>
+      
+      <button id="historialBtn" class="btn-confirmar" style="padding:.6rem 1rem; width: 100%; margin-top: 1rem;">Mi Historial de Pedidos</button>
+      
       <div style="display:flex;gap:.5rem;justify-content:center;margin-top:1rem">
         <button id="switchAccountBtn" class="btn-confirmar" style="padding:.6rem 1rem">Iniciar con otro usuario</button>
         <button id="logoutBtn" class="btn-cancelar" style="padding:.6rem 1rem">Cerrar sesión</button>
@@ -254,6 +257,13 @@ function ensureUserPanel() {
   document.body.appendChild(modal);
 
   document.getElementById('userPanelClose')?.addEventListener('click', closeUserPanel);
+  
+  // [US-Int-04] Listener para el nuevo botón 'Mi Historial'
+  document.getElementById('historialBtn')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeUserPanel();
+      showHistorial();
+  });
   window.addEventListener('click', (e) => {
     if (e.target === modal) closeUserPanel();
   });
@@ -851,9 +861,11 @@ if (pagoForm) {
       // 5. ¡Éxito! Limpiar y mostrar boleta
       alert(data.mensaje); // "Pedido creado exitosamente"
 
-      // Guardamos la boleta RECIBIDA de la API (no la que creamos)
-      // El backend ahora nos devuelve la boleta real con el ID
-      localStorage.setItem("boleta", JSON.stringify(data.boleta));
+  // Guardamos la boleta RECIBIDA de la API (no la que creamos)
+  // El backend ahora nos devuelve la boleta real con el ID
+  // Hacemos fallback por si el backend devuelve el objeto en otra clave
+  const boletaToStore = data.boleta ?? data.pedido ?? data;
+  localStorage.setItem("boleta", JSON.stringify(boletaToStore));
       
       // Limpiamos el carrito
       carrito = [];
@@ -917,7 +929,117 @@ async function renderReportes() {
         popEl.textContent = "Error";
     }
 }
+// [US-Int-03] Actualización de renderBoleta para leer el formato de la API
+function showBoleta() {
+  // Mostrar la vista de boleta y renderizar su contenido
+  document.querySelectorAll('.view').forEach(v => v.classList.add('is-hidden'));
+  const b = document.getElementById('boleta');
+  if (b) b.classList.remove('is-hidden');
+  setActive(null);
+  renderBoleta();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// [US-Int-03] Actualización de renderBoleta para leer el formato de la API
+function renderBoleta() {
+  // Leemos la boleta que guardamos en localStorage DESPUÉS de la llamada a la API
+  const boleta = JSON.parse(localStorage.getItem('boleta'));
+  
+  if (!boleta || !boleta.items) {
+      console.error("No se encontró una boleta válida en localStorage.");
+      return;
+  }
+
+  const fechaEl = document.getElementById("boletaFecha");
+  const tbody = document.getElementById("boletaItems");
+  const totalEl = document.getElementById("boletaTotal");
+  if (!fechaEl || !tbody || !totalEl) return;
+
+  // Total Final y Fecha
+  fechaEl.textContent = new Date(boleta.fecha_pedido || boleta.fecha).toLocaleString();
+  const totalFinal = boleta.total_pedido || boleta.total;
+  totalEl.textContent = `$${totalFinal.toLocaleString()}`;
+
+  tbody.innerHTML = "";
+  boleta.items.forEach(item => {
+    const tr = document.createElement("tr");
+    
+    // --- LECTURA DE CAMPOS CRÍTICOS ---
+    const nombre = item.nombre_plato || item.nombre || 'Producto Desconocido';
+    const precio = item.precio_unitario || item.precio || 0;
+    const subtotal = item.subtotal || (precio * (item.cantidad || 1));
+    
+    tr.innerHTML = `
+      <td>${nombre}</td>
+      <td>${item.cantidad || 1}</td>
+      <td>$${precio.toLocaleString()}</td>
+      <td>$${subtotal.toLocaleString()}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
 // ... [FIN LÓGICA DE NAVEGACIÓN Y CARRITO] ...
+
+// [US-Int-04] Nueva vista para el historial del cliente
+function showHistorial() {
+  document.querySelectorAll(".view").forEach(v => v.classList.add("is-hidden"));
+  const g = document.getElementById("historial");
+  if (g) g.classList.remove("is-hidden");
+    
+  renderHistorial(); // <-- Llamada a la API
+    
+  setActive(null); // No hay ítem de navbar activo
+}
+
+// [US-Int-04] Nueva función para renderizar el historial desde la API
+async function renderHistorial() {
+  const tbody = document.getElementById("historialTabla");
+  if (!tbody) return;
+
+  tbody.innerHTML = `<tr><td colspan="5">Cargando historial...</td></tr>`;
+
+  const { token } = getUser();
+  if (!token) {
+    tbody.innerHTML = `<tr><td colspan="5" style="color: red;">Debes iniciar sesión para ver tu historial.</td></tr>`;
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/pedidos/historial`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || 'Error al cargar historial');
+    }
+
+    if (data.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5">Aún no has realizado ningún pedido.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = ""; // Limpiamos la tabla
+    data.forEach(pedido => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${pedido.id}</td>
+        <td>${new Date(pedido.fecha_pedido).toLocaleString()}</td>
+        <td>${pedido.nombre_cliente}</td>
+        <td>${pedido.direccion_envio}</td>
+        <td>$${pedido.total_pedido.toLocaleString()}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+  } catch (error) {
+    console.error("Error al cargar historial:", error);
+    tbody.innerHTML = `<tr><td colspan="5" style="color: red;">Error al cargar historial: ${error.message}</td></tr>`;
+  }
+}
 
 
 /* =========================

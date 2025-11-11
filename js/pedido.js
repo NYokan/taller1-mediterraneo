@@ -96,8 +96,7 @@ document.getElementById('btnVaciar')?.addEventListener('click', () => {
   }
 });
 
-// Confirmar (mock)
-// Confirmar (Redirige al formulario de pago en la SPA)
+// [US-Int-03] Confirmar (Redirige al formulario de pago en la SPA)
 document.getElementById('btnConfirmar')?.addEventListener('click', () => {
   if (!carrito.length) return alert('Tu carrito está vacío.');
   
