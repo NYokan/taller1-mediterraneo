@@ -782,13 +782,9 @@ async function eliminarProducto(id) {
   }
 }
 
-// La función 'editarProducto(index)' antigua ya no es necesaria, 
-// puedes borrarla o dejarla comentada.
 function editarProducto(index) { 
   alert("Esta función (editarProducto) ya no se usa y debe ser reemplazada.");
 }
-// ... [FIN LÓGICA DE ADMIN] ...
-// Las funciones relacionadas con la vista 'Pedido' fueron movidas arriba cerca de `setNavListeners()`.
 
 function calcularTotal() {
   return carrito.reduce((acc, item) => acc + item.precio * item.cantidad, 0);
@@ -796,26 +792,8 @@ function calcularTotal() {
 
 // === [US-Int-03] Procesar pedido y redirigir a boleta ===
 async function procesarPedido() {
-    const nombre    = document.getElementById("nombre")?.value.trim();
-    const direccion = document.getElementById("direccion")?.value.trim();
-    const metodo    = document.getElementById("metodo")?.value;
-
-    if (!nombre || !direccion || !metodo) {
-      alert("Por favor, completa todos los campos.");
-      return;
-    }
-
-    if (!carrito || carrito.length === 0) {
-      alert("Tu carrito está vacío.");
-      return;
-    }
-    
-    const { token } = getUser();
-    if (!isLoggedIn() || !token) {
-        alert("Debes iniciar sesión para confirmar un pedido.");
-        showLogin();
-        return;
-    }
+    // ... (todo tu código de validación de nombre, dirección, etc. va aquí) ...
+    // ... (todo tu código de validación de token va aquí) ...
 
     // Preparar items para la API
     const total = carrito.reduce((acc, i) => acc + (i.precio * i.cantidad), 0);
@@ -836,96 +814,270 @@ async function procesarPedido() {
     };
 
     try {
-      // 1. Enviamos el pedido al backend
-      const response = await fetch(`${API_URL}/pedidos`, {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(datosPedido)
-      });
+        // 4. Llamar a la API
+        const response = await fetch(`${API_URL}/pedidos`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` 
+            },
+            body: JSON.stringify(datosPedido)
+        });
 
-      const data = await response.json();
-      console.log("Respuesta API:", data, "Status:", response.status);
-      
-      if (!response.ok) {
-          throw new Error(data.error || 'Error al crear el pedido');
-      }
+        const data = await response.json(); 
+        console.log("Respuesta API:", data, "Status:", response.status);
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Error al crear el pedido');
+        }
 
-      // 2. Si el backend crea el pedido, nos da un ID
-      alert(data.mensaje || "¡Pedido creado exitosamente!");
-      
-      // 3. Limpiamos el carrito
-      carrito = [];
-      guardarCarrito();
+        // 5. ¡Éxito! Limpiar y Redirigir
+        alert(data.mensaje || "¡Pedido creado exitosamente!");
 
-      // 4. Redirigimos a la página de boleta CON EL ID
-      const pedidoId = data.pedido?.id || data.id || data.pedidoId;
-      if (pedidoId) {
-          window.location.href = `pedido.html?id=${pedidoId}`;
-      } else {
-          console.error("No se recibió ID del pedido:", data);
-          alert("Error: El servidor no devolvió un ID de pedido.");
-      }
+        // --- INICIO DE LA SOLUCIÓN ---
+        // ¡YA NO SE GUARDA NADA EN LOCALSTORAGE!
+        // localStorage.setItem("boleta", ...); // <--- ESTO SE ELIMINA
+        // --- FIN DE LA SOLUCIÓN ---
+
+        // Limpiamos el carrito
+        carrito = [];
+        guardarCarrito(); 
+        
+        pagoForm.reset();
+
+        // Redirigimos a la página de boleta CON EL ID
+        const pedidoId = data.boleta?.id || data.id || data.pedidoId; // <--- ESTO ESTÁ PERFECTO
+        if (pedidoId) {
+            window.location.href = `pedido.html?id=${pedidoId}`;
+        } else {
+            console.error("No se recibió ID del pedido:", data);
+            alert("Error: El servidor no devolvió un ID de pedido.");
+        }
 
     } catch (error) {
         console.error("Error al confirmar pedido:", error);
         alert(`Error: ${error.message}`);
     }
 }
-
-// Listener del formulario de pago (llama a procesarPedido)
+/* === [US-Int-03] Submit del formulario de pago (Integrado con API) === */
 const pagoForm = document.getElementById("pagoForm");
 if (pagoForm) {
-  pagoForm.addEventListener("submit", (e) => {
+  pagoForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    procesarPedido();
+
+    // 1. Validar campos del formulario
+    const nombre    = document.getElementById("nombre")?.value.trim();
+    const direccion = document.getElementById("direccion")?.value.trim();
+    const metodo    = document.getElementById("metodo")?.value;
+
+    if (!nombre || !direccion || !metodo) {
+      alert("Por favor, completa todos los campos.");
+      return;
+    }
+
+    // 2. Validar carrito y autenticación
+    if (!carrito || carrito.length === 0) {
+      alert("Tu carrito está vacío.");
+      return;
+    }
+    
+    const { token } = getUser();
+    if (!isLoggedIn() || !token) {
+        alert("Debes iniciar sesión para confirmar un pedido.");
+        showLogin();
+        return;
+    }
+
+    // 3. Preparar el JSON para la API
+    const total = carrito.reduce((acc, i) => acc + (i.precio * i.cantidad), 0);
+    
+    const itemsParaAPI = carrito.map(item => ({
+        producto_id: item.id, 
+        cantidad: item.cantidad,
+        precio_unitario: item.precio
+    }));
+
+    const datosPedido = {
+        info_cliente: {
+            nombre: nombre,
+            direccion: direccion,
+            metodo_pago: metodo
+        },
+        items: itemsParaAPI,
+        total_pedido: total
+    };
+
+    try {
+      // 4. Llamar a la API
+      const response = await fetch(`${API_URL}/pedidos`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}` 
+          },
+          body: JSON.stringify(datosPedido)
+      });
+
+      const data = await response.json(); // data = { mensaje: "...", boleta: { id: 1, ... } }
+      if (!response.ok) {
+          throw new Error(data.error || 'Error al crear el pedido');
+      }
+
+      // 5. ¡Éxito! Combinar, Limpiar y Mostrar Boleta
+      alert(data.mensaje);
+
+      // --- INICIO DE LA CORRECCIÓN ---
+      // data.boleta (de la API) tiene: id, fecha_pedido, total_pedido.
+      // carrito (del Frontend) tiene: nombre, precio, cantidad.
+      // ¡Debemos combinarlos para que renderBoleta() funcione!
+
+      const boletaFinalParaStorage = {
+          id: data.boleta.id,
+          fecha_pedido: data.boleta.fecha_pedido,
+          total_pedido: data.boleta.total_pedido,
+          
+          // Usamos el 'carrito' (que tiene nombres) para construir los items
+          items: carrito.map(itemDelCarrito => ({
+              nombre: itemDelCarrito.nombre,
+              cantidad: itemDelCarrito.cantidad,
+              precio: itemDelCarrito.precio, // Precio unitario
+              subtotal: itemDelCarrito.cantidad * itemDelCarrito.precio // Calculamos el subtotal
+          }))
+      };
+      
+      // Guardamos la boleta COMPLETA Y COMBINADA
+      localStorage.setItem("boleta", JSON.stringify(boletaFinalParaStorage));
+      // --- FIN DE LA CORRECCIÓN ---
+
+      // Limpiamos el carrito
+      carrito = [];
+      guardarCarrito(); 
+      
+      pagoForm.reset();
+
+      // Mostramos la vista de boleta
+      document.getElementById("pago")?.classList.add("is-hidden");
+      showBoleta(); 
+
+    } catch (error) {
+        console.error("Error al confirmar pedido:", error);
+        alert(`Error: ${error.message}`);
+    }
   });
 }
 
 // [US-Int-03] Mostrar la vista de boleta
 function showBoleta() {
-  document.querySelectorAll('.view').forEach(v => v.classList.add('is-hidden'));
-  const b = document.getElementById('boleta');
-  if (b) b.classList.remove('is-hidden');
+  const boletaView = document.getElementById("boleta");
+  if (!boletaView) return;
+
+  // [CORRECCIÓN] Inyectamos el HTML de la boleta si es la primera vez que se muestra
+  if (!boletaView.dataset.built) {
+    boletaView.innerHTML = `
+      <h2>Boleta Digital</h2>
+      <div class="boleta-box">
+        <div class="boleta-header">
+          <h3>La Terraza</h3>
+          <p>Fecha: <span id="boletaFecha">--/--/----</span></p>
+        </div>
+        <table class="boleta-tabla">
+          <thead>
+            <tr>
+              <th>Ítem</th>
+              <th>Cant.</th>
+              <th>Precio</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody id="boletaItems">
+            </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3"><strong>Total</strong></td>
+              <td><strong id="boletaTotal">$0</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+        <p class="muted">Gracias por preferir La Terraza.</p>
+        <button id="volverInicioBoleta" class="btn-confirmar">Volver al Inicio</button>
+      </div>
+    `;
+    boletaView.dataset.built = "1"; // Marcamos como "construido"
+    
+    // Asignamos el listener al botón que acabamos de crear
+    document.getElementById("volverInicioBoleta")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        showHome();
+    });
+  }
+  // [FIN CORRECCIÓN]
+
+  document.querySelectorAll(".view").forEach(v => v.classList.add("is-hidden"));
+  boletaView.classList.remove("is-hidden");
+  
+  renderBoleta(); // <-- Ahora SÍ existen los IDs (boletaFecha, boletaItems, etc.)
+  
   setActive(null);
-  renderBoleta(); // Renderizar desde window.boletaActual
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// [US-Int-03] Renderizar boleta desde la variable global (NO desde localStorage)
+// [US-Int-03] renderBoleta() actualizada para leer el formato combinado
 function renderBoleta() {
-  // Leemos la boleta desde la variable global (guardada por pagoForm)
-  const boleta = window.boletaActual;
+  const boletaJSON = localStorage.getItem('boleta');
+  console.log("Intentando cargar boleta de localStorage:", boletaJSON);
   
-  if (!boleta || !boleta.items) {
-      console.error("No se encontró una boleta válida. Datos disponibles:", boleta);
+  if (!boletaJSON) {
+      console.error("No hay datos de boleta en localStorage.");
+      return;
+  }
+  
+  let boleta;
+  try {
+    boleta = JSON.parse(boletaJSON);
+  } catch (e) {
+    console.error("Error al parsear JSON de boleta:", e);
+    return;
+  }
+  
+  if (!boleta) {
+      console.error("Boleta es null después de parsear.");
       return;
   }
 
   const fechaEl = document.getElementById("boletaFecha");
   const tbody = document.getElementById("boletaItems");
   const totalEl = document.getElementById("boletaTotal");
-  if (!fechaEl || !tbody || !totalEl) return;
+  const idEl = document.getElementById("boletaId");
+  
+  if (!fechaEl || !tbody || !totalEl) {
+      console.error("No se encontraron elementos de boleta. boletaFecha:", !!fechaEl, "boletaItems:", !!tbody, "boletaTotal:", !!totalEl);
+      return;
+  }
 
-  // Total Final y Fecha
-  fechaEl.textContent = new Date(boleta.fecha_pedido || boleta.fecha).toLocaleString();
-  const totalFinal = boleta.total_pedido || boleta.total;
-  totalEl.textContent = `$${totalFinal.toLocaleString()}`;
+  // Leemos los campos del objeto que acabamos de guardar
+  if (idEl) idEl.textContent = boleta.id || '---';
+  fechaEl.textContent = boleta.fecha_pedido ? new Date(boleta.fecha_pedido).toLocaleString() : '--/--/----';
+  totalEl.textContent = `$${(boleta.total_pedido || 0).toLocaleString()}`;
 
   tbody.innerHTML = "";
+  
+  if (!boleta.items || boleta.items.length === 0) {
+    console.warn("La boleta no tiene items válidos.");
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay items en esta boleta.</td></tr>';
+    return;
+  }
+  
   boleta.items.forEach(item => {
     const tr = document.createElement("tr");
-    
-    // --- LECTURA DE CAMPOS CRÍTICOS ---
-    const nombre = item.nombre_plato || item.nombre || 'Producto Desconocido';
-    const precio = item.precio_unitario || item.precio || 0;
-    const subtotal = item.subtotal || (precio * (item.cantidad || 1));
+    // Leemos los campos del objeto combinado: nombre, cantidad, precio, subtotal
+    const nombre = item.nombre || 'Producto sin nombre';
+    const cantidad = item.cantidad || 0;
+    const precio = item.precio || 0;
+    const subtotal = item.subtotal || 0;
     
     tr.innerHTML = `
       <td>${nombre}</td>
-      <td>${item.cantidad || 1}</td>
+      <td>${cantidad}</td>
       <td>$${precio.toLocaleString()}</td>
       <td>$${subtotal.toLocaleString()}</td>
     `;
@@ -995,25 +1147,21 @@ async function renderHistorial() {
   }
 }
 
-
-/* =========================
-   Init
-========================= */
 document.addEventListener("DOMContentLoaded", () => {
   renderNavbar();
   cargarCarrito();
-  fetchMenu(); // <--- LLAMADA A LA API (Nueva funcionalidad)
+  fetchMenu();
   
   // Lógica de redirección por hash
-  if (document.getElementById("boleta")) renderBoleta();
+  // if (document.getElementById("boleta")) renderBoleta(); // <-- ELIMINADA
   if (window.location.hash === '#menu')   showMenu();
-  if (window.location.hash === '#boleta') showBoleta();
+  
+  // [CORRECCIÓN 2]
+  // Solo llamamos a showBoleta() si el hash es #boleta. 
+  // showBoleta() se encargará de llamar a renderBoleta() internamente.
+  if (window.location.hash === '#boleta') showBoleta(); 
+
   
   const verPedidoBtn = document.getElementById('verPedidoBtn');
   if (verPedidoBtn) verPedidoBtn.addEventListener('click', () => showPedido());
 });
-
-const volverInicio = document.getElementById("volverInicio");
-if (volverInicio) {
-  volverInicio.addEventListener("click", () => showHome());
-}
