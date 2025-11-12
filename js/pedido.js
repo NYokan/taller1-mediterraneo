@@ -1,98 +1,86 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Obtener el ID del pedido desde la URL (Ej: pedido.html?id=5)
-    const urlParams = new URLSearchParams(window.location.search);
-    const pedidoId = urlParams.get('id');
+    // 1. Ya no leemos la URL. Leemos localStorage.
+    const boletaJSON = localStorage.getItem('boleta');
 
-    if (!pedidoId) {
-        // Si no hay ID en la URL, mostramos un error
-        mostrarError('Error: No se ha especificado un número de pedido.');
+    if (!boletaJSON) {
+        mostrarError('Error: No se encontraron datos de la boleta.');
         return;
     }
 
-    // 2. Llamar a la API del backend para obtener los datos de ESE pedido
-    // Asumiendo que tu API_URL es una variable global, si no, escribe la URL completa
-    // const API_URL = 'http://localhost:3000/api'; // <--- Descomenta si no es global
-    
-    fetchBoleta(pedidoId);
-});
-
-async function fetchBoleta(id) {
+    let boleta;
     try {
-        const { token } = getUser(); // Asumiendo que tienes esta función global
-        if (!token) {
-             throw new Error('No estás autenticado para ver esta boleta.');
-        }
-
-        // Usamos el endpoint GET que ya tienes en tu backend
-        const response = await fetch(`${API_URL}/pedidos/${id}`, {
-             method: 'GET',
-             headers: {
-                 'Authorization': `Bearer ${token}` 
-             }
-        }); 
-        
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'No se pudo cargar el pedido.');
-        }
-
-        const boleta = await response.json(); // El backend nos da la boleta completa
-        
-        // 3. Si el backend responde bien, mostramos la boleta
-        renderBoleta(boleta); // Usamos la función para mostrar los datos
-
-    } catch (error) {
-        console.error('Error al obtener la boleta:', error);
-        mostrarError(`Error: ${error.message}`);
+        boleta = JSON.parse(boletaJSON);
+    } catch (e) {
+        mostrarError('Error: No se pudieron procesar los datos de la boleta.');
+        console.error("Error parsing boleta JSON:", e);
+        return;
     }
-}
+
+    // 2. Renderizar la boleta con los datos
+    renderBoleta(boleta);
+    
+    // 3. Limpiamos el storage para que no se muestre de nuevo al recargar
+    localStorage.removeItem('boleta'); 
+});
 
 /**
  * Función que muestra la boleta en el HTML
- * AHORA RECIBE LA BOLETA COMO PARÁMETRO
+ * ¡CORREGIDA PARA LEER DE LOCALSTORAGE y USAR IDs DE pedido.html!
  */
 function renderBoleta(boleta) {
-    const contenedorItems = document.getElementById('boleta-items'); // Asigna IDs en tu HTML
+    // IDs de tu pedido.html (la versión que pegaste)
+    const contenedorItems = document.getElementById('boleta-items');
+    const boletaFechaEl = document.getElementById('boleta-fecha');
+    const boletaTotalEl = document.getElementById('boleta-total');
     const clienteNombreEl = document.getElementById('boleta-cliente-nombre');
     const clienteDireccionEl = document.getElementById('boleta-cliente-direccion');
     const clientePagoEl = document.getElementById('boleta-cliente-pago');
     const boletaIdEl = document.getElementById('boleta-id');
-    const boletaFechaEl = document.getElementById('boleta-fecha');
-    const boletaTotalEl = document.getElementById('boleta-total');
-    
+
+    // Validamos que los elementos existan
+    if (!contenedorItems || !boletaFechaEl || !boletaTotalEl || !clienteNombreEl || !boletaIdEl) {
+        console.error('Error fatal: Faltan elementos de la boleta en el HTML.');
+        mostrarError('Error al cargar la página. IDs de boleta no encontrados.');
+        return;
+    }
+
     contenedorItems.innerHTML = ''; // Limpiar
 
     // Validamos que el pedido y los items existan
     if (!boleta || !boleta.items || boleta.items.length === 0) {
-        mostrarError('Este pedido no tiene items o no se encontró.');
+        mostrarError('Esta boleta no tiene items o no se encontró.');
         return;
     }
 
     // Llenar datos del cliente e Info de la boleta
-    // (Asegúrate de que 'boleta.info_cliente' venga de tu API)
-    if(boleta.info_cliente) {
-        clienteNombreEl.textContent = boleta.info_cliente.nombre || 'Sin nombre';
-        clienteDireccionEl.textContent = boleta.info_cliente.direccion || 'Sin dirección';
-        clientePagoEl.textContent = boleta.info_cliente.metodo_pago || 'Sin método de pago';
-    }
     boletaIdEl.textContent = `#${boleta.id}`;
     boletaFechaEl.textContent = new Date(boleta.fecha_pedido).toLocaleString('es-CL');
+    
+    if (boleta.info_cliente) {
+        clienteNombreEl.textContent = boleta.info_cliente.nombre || 'Sin nombre';
+        clienteDireccionEl.textContent = boleta.info_cliente.direccion || 'Sin dirección';
+        clientePagoEl.textContent = boleta.info_cliente.metodo_pago || 'Sin método';
+    }
 
-    // 4. Iteramos sobre los items que vinieron del backend
+    // Iteramos sobre los items (del localStorage)
     boleta.items.forEach(item => {
         const itemHtml = document.createElement('tr');
-        const subtotal = item.cantidad * item.precio_unitario; // Usa los nombres de tu API
+        
+        const precioUnitario = item.precio || 0;
+        const cantidad = item.cantidad || 0;
+        const nombreProducto = item.nombre || 'Producto desconocido';
+        const subtotal = item.subtotal || (cantidad * precioUnitario); 
         
         itemHtml.innerHTML = `
-            <td>${item.nombre_producto || 'Producto desconocido'}</td>
-            <td>${item.cantidad}</td>
-            <td>$${item.precio_unitario.toLocaleString('es-CL')}</td>
+            <td>${nombreProducto}</td>
+            <td>${cantidad}</td>
+            <td>$${precioUnitario.toLocaleString('es-CL')}</td>
             <td>$${subtotal.toLocaleString('es-CL')}</td>
         `;
         contenedorItems.appendChild(itemHtml);
     });
 
-    // 5. Mostramos el total (que ya vino calculado de la API)
+    // Mostramos el total
     boletaTotalEl.textContent = `$${boleta.total_pedido.toLocaleString('es-CL')}`;
 }
 
@@ -100,18 +88,8 @@ function renderBoleta(boleta) {
  * Función simple para mostrar errores en la página
  */
 function mostrarError(mensaje) {
-    const contenedorPrincipal = document.querySelector('.boleta-container'); // Busca el contenedor principal
+    const contenedorPrincipal = document.querySelector('.boleta-container'); 
     if (contenedorPrincipal) {
-        contenedorPrincipal.innerHTML = `<p class="text-danger text-center">${mensaje}</p>`;
+        contenedorPrincipal.innerHTML = `<p class="text-danger text-center" style="color: red;">${mensaje}</p>`;
     }
 }
-
-// Asumo que tienes una función global `getUser()` en algún script
-// Si no la tienes, debes implementarla para obtener el token.
-// Ejemplo:
-/*
-function getUser() {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : { token: null, nombre: null };
-}
-*/

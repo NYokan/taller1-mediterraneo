@@ -791,6 +791,9 @@ function calcularTotal() {
 }
 
 // === [US-Int-03] Procesar pedido y redirigir a boleta ===
+// Esta función (procesarPedido) NO es la que se usa en tu formulario de pago.
+// El listener de 'pagoForm' (más abajo) es el que se ejecuta.
+// Dejamos esta función intacta como en tu archivo original.
 async function procesarPedido() {
     // ... (todo tu código de validación de nombre, dirección, etc. va aquí) ...
     // ... (todo tu código de validación de token va aquí) ...
@@ -843,10 +846,10 @@ async function procesarPedido() {
         carrito = [];
         guardarCarrito(); 
         
-        pagoForm.reset();
+        // pagoForm.reset(); // Esta variable no existe aquí
 
         // Redirigimos a la página de boleta CON EL ID
-        const pedidoId = data.boleta?.id || data.id || data.pedidoId; // <--- ESTO ESTÁ PERFECTO
+        const pedidoId = data.boleta?.id || data.id || data.pedidoId; 
         if (pedidoId) {
             window.location.href = `pedido.html?id=${pedidoId}`;
         } else {
@@ -859,7 +862,8 @@ async function procesarPedido() {
         alert(`Error: ${error.message}`);
     }
 }
-/* === [US-Int-03] Submit del formulario de pago (Integrado con API) === */
+
+/* === [US-Int-03] Submit del formulario de pago (SOLUCIÓN DEFINITIVA) === */
 const pagoForm = document.getElementById("pagoForm");
 if (pagoForm) {
   pagoForm.addEventListener("submit", async (e) => {
@@ -889,6 +893,7 @@ if (pagoForm) {
     }
 
     // 3. Preparar el JSON para la API
+    // ESTA ES LA VARIABLE 'total' QUE NECESITAMOS MÁS ADELANTE
     const total = carrito.reduce((acc, i) => acc + (i.precio * i.cantidad), 0);
     
     const itemsParaAPI = carrito.map(item => ({
@@ -918,23 +923,24 @@ if (pagoForm) {
           body: JSON.stringify(datosPedido)
       });
 
-      const data = await response.json(); // data = { mensaje: "...", boleta: { id: 1, ... } }
+      // data será: { mensaje: "...", pedidoId: 123 }
+      const data = await response.json(); 
       if (!response.ok) {
           throw new Error(data.error || 'Error al crear el pedido');
       }
 
-      // 5. ¡Éxito! Combinar, Limpiar y Mostrar Boleta
-      alert(data.mensaje);
+      // 5. ¡Éxito! Combinar, Limpiar y Redirigir
+      alert(data.mensaje || "¡Pedido creado exitosamente!");
 
       // --- INICIO DE LA CORRECCIÓN ---
-      // data.boleta (de la API) tiene: id, fecha_pedido, total_pedido.
-      // carrito (del Frontend) tiene: nombre, precio, cantidad.
-      // ¡Debemos combinarlos para que renderBoleta() funcione!
-
+      // data.boleta no existe. La respuesta es data.pedidoId
+      // Armamos la boleta para localStorage con los datos que SÍ tenemos.
+      
       const boletaFinalParaStorage = {
-          id: data.boleta.id,
-          fecha_pedido: data.boleta.fecha_pedido,
-          total_pedido: data.boleta.total_pedido,
+          id: data.pedidoId,                   // <-- CORREGIDO: Usamos data.pedidoId
+          fecha_pedido: new Date().toISOString(), // <-- CORREGIDO: Generamos la fecha ahora
+          total_pedido: total,                 // <-- CORREGIDO: Usamos la variable 'total'
+          info_cliente: datosPedido.info_cliente, // Usamos la info del formulario
           
           // Usamos el 'carrito' (que tiene nombres) para construir los items
           items: carrito.map(itemDelCarrito => ({
@@ -955,9 +961,15 @@ if (pagoForm) {
       
       pagoForm.reset();
 
-      // Mostramos la vista de boleta
+      // Escondemos la vista de pago
       document.getElementById("pago")?.classList.add("is-hidden");
-      showBoleta(); 
+      
+      // ******************************************************
+      // ******** AQUÍ ESTÁ LA SEGUNDA CORRECCIÓN      *******
+      // ******************************************************
+      // Reemplazamos 'showBoleta()' por la redirección a la página 'pedido.html'
+      window.location.href = 'pedido.html'; 
+      // ******************************************************
 
     } catch (error) {
         console.error("Error al confirmar pedido:", error);
@@ -967,6 +979,9 @@ if (pagoForm) {
 }
 
 // [US-Int-03] Mostrar la vista de boleta
+// Esta función 'showBoleta' y 'renderBoleta' ya no se usan 
+// para el flujo principal, pero las dejamos para no romper
+// otra lógica que pueda depender de ellas (como el hash #boleta)
 function showBoleta() {
   const boletaView = document.getElementById("boleta");
   if (!boletaView) return;

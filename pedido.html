@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Recibo del Pedido | La Terraza</title>
-  <!-- Fuente única: Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css?v=10">
   <style>
@@ -39,6 +38,13 @@
       color: #666;
       font-size: 0.9rem;
       margin-top: 0.5rem;
+    }
+    .boleta-info-cliente {
+      padding: 1rem;
+      background-color: #eee;
+      border-radius: 4px;
+      margin-bottom: 1.5rem;
+      border: 1px solid #ddd;
     }
     .boleta-table {
       width: 100%;
@@ -87,7 +93,6 @@
   </style>
 </head>
 <body>
-  <!-- Navbar -->
   <header class="navbar">
     <a href="index.html" class="logo" aria-label="Ir al inicio">LA TERRAZA</a>
     <nav class="nav"></nav>
@@ -96,10 +101,15 @@
   <main class="view view--pedido">
     <div class="boleta-container">
       <div class="boleta-header">
-        <h1>Recibo de tu Pedido</h1>
-        <div class="boleta-fecha" id="boletaFecha">Cargando fecha...</div>
+        <h1>Recibo de tu Pedido <span id="boleta-id"></span></h1>
+        <div class="boleta-fecha" id="boleta-fecha">Cargando fecha...</div>
       </div>
 
+      <div class="boleta-info-cliente">
+        <strong>Cliente:</strong> <span id="boleta-cliente-nombre">...</span><br>
+        <strong>Dirección:</strong> <span id="boleta-cliente-direccion">...</span><br>
+        <strong>Método de Pago:</strong> <span id="boleta-cliente-pago">...</span>
+      </div>
       <table class="boleta-table">
         <thead>
           <tr>
@@ -109,7 +119,7 @@
             <th>Subtotal</th>
           </tr>
         </thead>
-        <tbody id="boletaItems">
+        <tbody id="boleta-items">
           <tr>
             <td colspan="4" style="text-align: center; color: #999;">Cargando pedido...</td>
           </tr>
@@ -118,7 +128,7 @@
 
       <div class="boleta-total">
         <strong>Total:</strong>
-        <span id="boletaTotal">$0</span>
+        <span id="boleta-total">$0</span>
       </div>
 
       <div style="text-align: center; margin-top: 2rem;">
@@ -127,8 +137,7 @@
     </div>
   </main>
 
-  <!-- Script para cargar boleta desde API -->
-  <script src="js/app.js?v=8"></script>
-  <script src="js/pedido.js?v=1"></script>
+  <script src="js/app.js?v=10"></script>
+  <script src="js/pedido.js?v=3"></script>
 </body>
 </html>
