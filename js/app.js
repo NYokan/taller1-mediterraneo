@@ -120,6 +120,11 @@ function renderNavbar() {
   updateUserPanel(email, role);
   setNavListeners();
 }
+// Listeners para los enlaces del FOOTER
+  document.getElementById("footerHomeLink")?.addEventListener("click", (e) => { e.preventDefault(); showHome(); });
+  document.getElementById("footerMenuLink")?.addEventListener("click", (e) => { e.preventDefault(); showMenu(); });
+  document.getElementById("footerNosotrosLink")?.addEventListener("click", (e) => { e.preventDefault(); showNosotros(); });
+  document.getElementById("footerReservasLink")?.addEventListener("click", (e) => { e.preventDefault(); showPedido(); });
 
 function getNavLinks() {
   return Array.from(document.querySelectorAll('.nav__link'));
@@ -635,7 +640,7 @@ async function renderProductos() {
   if (!tbody) return;
 
   // Mostramos un 'cargando...'
-  tbody.innerHTML = `<tr><td colspan="4">Cargando productos...</td></tr>`;
+tbody.innerHTML = `<tr><td colspan="4"><div class="loader"></div></td></tr>`;
 
   try {
     // 1. Obtener los productos (igual que en el menú)
@@ -1118,7 +1123,7 @@ async function renderHistorial() {
   const tbody = document.getElementById("historialTabla");
   if (!tbody) return;
 
-  tbody.innerHTML = `<tr><td colspan="5">Cargando historial...</td></tr>`;
+tbody.innerHTML = `<tr><td colspan="5"><div class="loader"></div></td></tr>`;
 
   const { token } = getUser();
   if (!token) {
