@@ -60,9 +60,6 @@ html, body {
   color: #1a7a5a;
 }
 
-/* =========================
-   Gestión de Productos (Admin)
-========================= */
 .view--gestion {
   padding: 3rem 1.5rem;
   max-width: 900px;
@@ -134,27 +131,12 @@ html, body {
 
 .btn-editar {
   background: #ffcc80;
-  color: #333;
+  color: var(--color-contrast-dark);
 }
 
 .btn-eliminar {
   background: #d9534f;
   color: #fff;
-}
-/* =========================
-   Variables y base
-========================= */
-:root{
-  --color-bg: #DEE5E5; /* Alabaster Grey */
-  --color-text: #2b2b2b;
-  --color-brown: #4b2e2e;
-  --color-accent: #17B890; /* Mint Leaf */
-  --color-mint-leaf: #17B890;
-  --color-deep-teal: #5E807F;
-  --color-muted-teal: #9DC5BB;
-  --color-alabaster: #DEE5E5;
-  --nav-gap: 16px; /* espacio superior para bajar navbar */
-  --font-ui: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 /* Logo también con Inter */
@@ -166,33 +148,51 @@ html, body {
 html, body { margin: 0; padding: 0; }
 img { max-width: 100%; display: block; }
 
-body{
-  background: var(--color-bg);
-  color: var(--color-text);
-  font-family: var(--font-ui);
-  line-height: 1.5;
+:root {
+  /* Paleta Original */
+  --color-bg: #DEE5E5;
+  --color-text: #2b2b2b;
+  --color-brown: #4b2e2e;
+  --color-accent: #17B890;
+  --color-deep-teal: #5E807F;
+  --color-muted-teal: #9DC5BB;
+  
+  /* Nuevas Variables para UI */
+  --shadow-soft: 0 8px 24px rgba(0,0,0,0.05);
+  --shadow-hover: 0 12px 32px rgba(75, 46, 46, 0.15);
+  --radius-card: 16px;
+  --radius-btn: 12px; /* Border-radius more subtle and iOS-like */
+  --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+  
+  /* Mantener variables previas necesarias */
+  --color-alabaster: #DEE5E5;
+  --nav-gap: 16px;
+  --color-contrast-dark: #082D0F; /* alt-contrast fallback */
+  --color-text: var(--color-contrast-dark);
+
+  /* EFECTO LIQUID GLASS (Apple Style) */
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.5);
+  --glass-blur: blur(20px) saturate(180%);
+  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
 }
-
-h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
-
-/* =========================
-   Navbar
-========================= */
-.navbar{
-  position: fixed; /* Fija en la parte superior */
-  top: 0;
-  left: 0;
-  right: 0;
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
   z-index: 100;
 
+  /* Flex layout */
   display: flex; 
   align-items: center; 
   justify-content: space-between;
-  padding: 1rem 2rem;
+  padding: 1rem 5%;
 
-  background: var(--color-bg);
-  color: var(--color-brown); 
-  box-shadow: 0 1px 0 rgba(0,0,0,.06); /* sutil línea separadora */
+  /* Liquid Glass Effect */
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur); /* Safari fallback */
+  border-bottom: var(--glass-border);
+  box-shadow: var(--shadow-glass);
 }
 
 .logo{
@@ -286,18 +286,18 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
 }
 
 .card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 1.25rem;
-  text-align: center;
-  box-shadow: 0 10px 24px rgba(0,0,0,.06);
-  transition: transform .18s ease, box-shadow .18s ease;
+  /* Liquid Glass card */
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: var(--glass-border);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  border-radius: 20px;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  min-height: 370px; /* Alto fijo para todas las cards */
-  height: 100%;
+  transition: transform 0.3s ease;
 }
 
 .card img {
@@ -305,7 +305,7 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
   max-height: 140px;
   margin: .5rem auto 1rem;
   border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
   object-fit: contain;
 }
 .card h3 {
@@ -321,14 +321,29 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
 }
 
 .card button{
-  border: 0; border-radius: 8px;
-  padding: .6rem 1.1rem;
-  background: var(--color-brown); color: #fff;
-  font-weight: 600; cursor: pointer;
-  transition: background .2s ease;
-  margin-top: auto; /* Empuja el botón al fondo de la card */
+  margin-top: 1rem;
+  width: 100%;
+  max-width: 240px;
+  padding: 0.8rem 1.2rem;
+  border: none;
+  border-radius: var(--radius-btn);
+  background: var(--color-brown);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: all 0.2s ease;
 }
-.card button:hover{ background: #6d4c41; }
+.card button:hover{
+  transform: scale(1.02);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+/* Card hover lift */
+.card:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.85);
+}
 
 /* =========================
    Modales (Sprint 2)
@@ -383,7 +398,7 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
   grid-template-columns: 1fr 1fr;
   gap: 2.5rem;
   align-items: center;
-  width: min(1000px, 85vw);  /* mismo ancho que hero */
+  width: min(1000px, 85vw); 
   margin: 3rem auto;
   padding: 0 1rem;
 }
@@ -446,18 +461,24 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
    Barra de pedido inferior
 ========================= */
 .barra-pedido {
-  position: sticky;
-  bottom: 0;
-  width: 100%;
-  background: var(--color-brown);
-  color: #fff;
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 500px;
+  background: rgba(40, 40, 40, 0.85);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 50px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  font-size: 1rem;
-  z-index: 60;
-  box-shadow: 0 -4px 10px rgba(0,0,0,.15);
+  z-index: 999;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .barra-pedido p {
@@ -466,18 +487,17 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
 }
 
 .barra-pedido button {
-  background: var(--color-accent);
-  color: var(--color-brown);
+  background: white;
+  color: black;
+  border-radius: 30px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 700;
   border: none;
-  padding: .6rem 1.2rem;
-  font-weight: 600;
-  border-radius: 8px;
   cursor: pointer;
-  transition: background .2s ease;
 }
 
 .barra-pedido button:hover {
-  background: #ffd699;
+  transform: scale(1.02);
 }
 
 /* =========================
@@ -638,16 +658,17 @@ h1, h2, h3 { margin: .5rem 0 1rem; text-align: center; }
   background: var(--color-brown);
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 1rem;
+  border-radius: var(--radius-btn);
+  padding: 0.7rem 1.5rem;
   font-size: 1.05rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background .2s ease;
+  transition: transform 0.2s ease, background 0.2s ease;
 }
 
 .btn-confirmar:hover {
-  background: #6d4c41;
+  transform: scale(1.02);
+  opacity: 0.95;
 }
 
 .btn-cancelar {
